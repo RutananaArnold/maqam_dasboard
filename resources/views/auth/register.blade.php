@@ -13,6 +13,20 @@
 <body>
 
     <div class="container mt-5">
+
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @elseif (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @else
+            <div>
+            </div>
+        @endif
+
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card">
@@ -36,6 +50,16 @@
                                 <label for="password-confirm">Confirm Password</label>
                                 <input type="password" class="form-control" id="password-confirm"
                                     name="password-confirm" required>
+                            </div>
+                            {{-- choose role --}}
+                            <div class="form-group">
+                                <label for="role">Role</label>
+                                <select class="form-control" id="role" name="role" required>
+                                    <option value="">Select Role</option>
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role->id }}">{{ $role->Role }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <button type="submit" class="btn btn-primary">Register</button>
                         </form>

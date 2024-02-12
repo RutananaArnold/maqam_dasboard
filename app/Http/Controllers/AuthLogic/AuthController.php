@@ -3,31 +3,41 @@
 namespace App\Http\Controllers\AuthLogic;
 
 use App\Http\Controllers\Controller;
+use App\Models\Advert;
 use Illuminate\Http\Request;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
     public function showRegistrationForm()
     {
-        return view('auth.register');
+        $roles = DB::table('user_roles')->get();
+        return view('auth.register', ['roles' => $roles]);
     }
 
     protected function registration(Request $request)
     {
-        $response =  User::create([
+        $currentTime = now();
+
+        $user =  DB::table('users')->insertGetId([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role,
+            'created_at' => $currentTime,
+            'updated_at' => $currentTime
         ]);
 
-        if ($response) {
-            return redirect()->route('login');
+
+        if ($user) {
+            return redirect()->back()->with('success', 'New user registered successfully');
         }
     }
 
@@ -68,9 +78,9 @@ class AuthController extends Controller
     {
         // $totalAgents = Policy::count();
         $totalUsers = User::count();
-        $totalAgents = 0;
+        $totalAdverts = Advert::count();
 
-        return view('dashboard',  compact('totalAgents', 'totalUsers'));
+        return view('dashboard',  compact('totalAdverts', 'totalUsers'));
     }
 
 

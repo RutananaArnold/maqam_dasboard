@@ -34,42 +34,42 @@
     <!-- Template Main CSS File -->
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
 
+
+    {{-- pagination css --}}
     <style>
-        /* CSS for the navigation menu */
-        .scrollable-navbar-container {
-            overflow-x: auto;
-            /* Allow horizontal scrolling */
-        }
-
-        .nav-container-menu {
+        .pagination {
             display: flex;
-            justify-content: center;
-        }
-
-        .nav-list-menu {
-            list-style-type: none;
+            list-style: none;
             padding: 0;
-            display: flex;
         }
 
-        .nav-item-menu {
-            margin: 0 10px;
-        }
-
-        .nav-link-menu {
+        .pagination a {
+            display: inline-block;
+            padding: 8px 16px;
+            margin-right: 5px;
+            border: 1px solid #ccc;
             text-decoration: none;
             color: #333;
-            font-weight: bold;
-            font-size: 18px;
-            border: 2px solid #333;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background-color: #fff;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .pagination a:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pagination .active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .pagination .disabled {
+            color: #ccc;
+            pointer-events: none;
         }
     </style>
+
 </head>
 
 <body>
@@ -120,12 +120,12 @@
                 </a>
                 <ul id="advert-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="#">
+                        <a href="{{ route('advertsList') }}">
                             <i class="bi bi-circle"></i><span>View Adverts</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="{{ route('toAddAdvert') }}">
                             <i class="bi bi-circle"></i><span>Add Advert</span>
                         </a>
                     </li>
@@ -172,6 +172,42 @@
                 </ul>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#Sonda-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-journal-text"></i><span>Sonda Mpola</span><i
+                        class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                {{-- <ul id="Sonda-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="#">
+                            <i class="bi bi-circle"></i><span>View Maqam Experiences</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="bi bi-circle"></i><span>Add Maqam Experience</span>
+                        </a>
+                    </li>
+
+                </ul> --}}
+            </li>
+
+
+
+            {{-- registration page  for those with permission to access the dashboard --}}
+
+            @auth
+                @if (auth()->user()->role == 1)
+                    <li class="nav-heading">Pages</li>
+
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" href="{{ route('register') }}">
+                            <i class="bi bi-file-earmark"></i>
+                            <span>Register System User</span>
+                        </a>
+                    </li>
+                @endif
+            @endauth
 
 
         </ul>
