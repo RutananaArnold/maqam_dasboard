@@ -35,41 +35,6 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
 
 
-    {{-- pagination css --}}
-    <style>
-        .pagination {
-            display: flex;
-            list-style: none;
-            padding: 0;
-        }
-
-        .pagination a {
-            display: inline-block;
-            padding: 8px 16px;
-            margin-right: 5px;
-            border: 1px solid #ccc;
-            text-decoration: none;
-            color: #333;
-            background-color: #fff;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .pagination a:hover {
-            background-color: #f5f5f5;
-        }
-
-        .pagination .active {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        .pagination .disabled {
-            color: #ccc;
-            pointer-events: none;
-        }
-    </style>
-
 </head>
 
 <body>
@@ -138,12 +103,12 @@
                 </a>
                 <ul id="packages-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="#">
+                        <a href="{{ route('packagesList') }}">
                             <i class="bi bi-circle"></i><span>View Packages</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="{{ route('toAddPackage') }}">
                             <i class="bi bi-circle"></i><span>Add Package</span>
                         </a>
                     </li>

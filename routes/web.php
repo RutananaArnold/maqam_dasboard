@@ -3,6 +3,7 @@
 use App\Http\Controllers\Adverts\AdvertController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthLogic\AuthController;
+use App\Http\Controllers\Packages\PackageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,13 @@ Route::post('/delete-advert', [AdvertController::class, 'deleteAdvert'])->middle
 
 
 // packages
+Route::get('/view-packages', [PackageController::class, 'showPackages'])->middleware(['auth'])->name('packagesList');
+Route::get('/add-packages', [PackageController::class, 'showAddPackage'])->middleware(['auth'])->name('toAddPackage');
+Route::post('/save-package', [PackageController::class, 'addNewPackage'])->middleware(['auth'])->name('createPackage');
+Route::get('/edit/{packageId}/package', [PackageController::class, 'viewPackageDetail'])->middleware(['auth'])->name('packageDetails');
+Route::post('/update-package', [PackageController::class, 'updatePackage'])->middleware(['auth'])->name('packageUpdate');
+Route::get('/delete/{packageId}/package', [PackageController::class, 'showDeletePackagePage'])->middleware(['auth'])->name('showDeletePage');
+Route::post('/delete-package', [PackageController::class, 'deletePackage'])->middleware(['auth'])->name('packageDelete');
 
 
 // maqam experience
