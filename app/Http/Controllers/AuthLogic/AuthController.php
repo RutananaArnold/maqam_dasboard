@@ -4,6 +4,8 @@ namespace App\Http\Controllers\AuthLogic;
 
 use App\Http\Controllers\Controller;
 use App\Models\Advert;
+use App\Models\MaqamEx;
+use App\Models\Package;
 use Illuminate\Http\Request;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
@@ -76,11 +78,13 @@ class AuthController extends Controller
 
     public function showDashboard()
     {
-        // $totalAgents = Policy::count();
+
         $totalUsers = User::count();
         $totalAdverts = Advert::count();
+        $totalPackages = Package::count();
+        $maqamExperiences = MaqamEx::count();
 
-        return view('dashboard',  compact('totalAdverts', 'totalUsers'));
+        return view('dashboard',  compact('totalAdverts', 'totalUsers', 'totalPackages', 'maqamExperiences'));
     }
 
 

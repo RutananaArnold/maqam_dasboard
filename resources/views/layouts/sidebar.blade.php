@@ -124,12 +124,12 @@
                 </a>
                 <ul id="experience-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="#">
+                        <a href="{{ route('maqamExpList') }}">
                             <i class="bi bi-circle"></i><span>View Maqam Experiences</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="{{ route('showAddMaqamExp') }}">
                             <i class="bi bi-circle"></i><span>Add Maqam Experience</span>
                         </a>
                     </li>

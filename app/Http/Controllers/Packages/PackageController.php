@@ -11,7 +11,7 @@ class PackageController extends Controller
 {
     public function showPackages()
     {
-        $packages = DB::table('packages')->orderBy('created_at', 'desc')->paginate(10);
+        $packages = DB::table('packages')->orderBy('created_at', 'desc')->get();
         return view('packages.packages_list', ['packages' => $packages]);
     }
 

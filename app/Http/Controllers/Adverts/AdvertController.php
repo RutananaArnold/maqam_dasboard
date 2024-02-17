@@ -11,7 +11,7 @@ class AdvertController extends Controller
 {
     public function showAdverts()
     {
-        $adverts = DB::table('adverts')->orderBy('created_at', 'desc')->paginate(10);
+        $adverts = DB::table('adverts')->orderBy('created_at', 'desc')->get();
         return view('adverts.adverts_list', ['adverts' => $adverts]);
     }
 

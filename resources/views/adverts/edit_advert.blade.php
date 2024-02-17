@@ -45,24 +45,26 @@
                     <label for="description">Advert Description:</label>
                     <input type="text" id="description" name="description" value="{{ $advert->description }}"
                         class="form-control" required>
+                </div>
 
-                    <div class="form-group">
-                        <label for="image">Change Advert Image:</label>
-                        <input type="file" id="image" name="image" class="form-control">
-                    </div>
+                <div class="form-group">
+                    <label for="image">Change Advert Image:</label>
+                    <input type="file" id="image" name="image" class="form-control">
+                </div>
 
-                    <div class="form-group">
-                        <label for="endDateTime">Advert End DateTime:</label>
-                        <input type="datetime-local" id="endDateTime" name="endDateTime" value="{{ $advert->endDateTime }}"
-                            class="form-control" required>
-                    </div>
+                <div class="form-group">
+                    <label for="endDateTime">Advert End DateTime:</label>
+                    <input type="datetime-local" id="endDateTime" name="endDateTime" value="{{ $advert->endDateTime }}"
+                        class="form-control" required>
+                </div>
 
-                    <button style="margin-top: 30px" type="submit" class="btn btn-primary">Edit Advert</button>
+                <button style="margin-top: 30px" type="submit" class="btn btn-primary">Edit Advert</button>
             </form>
 
-         <!-- Cancel button -->
-         <a href="{{ url('/view-adverts') }}" class="btn btn-secondary" style="margin-left: 500px; margin-top:30px">Cancel</a>
+            <!-- Cancel button -->
+            <a href="{{ url('/view-adverts') }}" class="btn btn-secondary"
+                style="margin-left: 500px; margin-top:30px">Cancel</a>
         </div>
-       
+
     </div>
 @endsection

@@ -104,7 +104,7 @@
                                         <i class="bi bi-people"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6>0</h6>
+                                        <h6>{{ $totalPackages }}</h6>
                                     </div>
                                 </div>
                             </div>
@@ -123,7 +123,7 @@
                                         <i class="bi bi-people"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6>1244</h6>
+                                        <h6>{{ $maqamExperiences }}</h6>
                                     </div>
                                 </div>
 
