@@ -73,11 +73,18 @@
                 </a>
                 <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="#">
+                        <a href="{{ route('bookingsNow') }}">
                             <i class="bi bi-circle"></i><span>View Bookings</span>
                         </a>
                     </li>
                 </ul>
+                {{-- <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="#">
+                            <i class="bi bi-circle"></i><span>Booking Categories</span>
+                        </a>
+                    </li>
+                </ul> --}}
             </li>
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#advert-nav" data-bs-toggle="collapse" href="#">

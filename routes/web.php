@@ -3,6 +3,7 @@
 use App\Http\Controllers\Adverts\AdvertController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthLogic\AuthController;
+use App\Http\Controllers\Bookings\BookingsController;
 use App\Http\Controllers\MaqamExp\MaqamExperienceController;
 use App\Http\Controllers\Packages\PackageController;
 
@@ -59,6 +60,8 @@ Route::post('/edit-maqam-experience', [MaqamExperienceController::class, 'update
 Route::get('/delete/{expId}/experience', [MaqamExperienceController::class, 'showDeletePage'])->middleware(['auth'])->name('toDeleteExp');
 Route::post('/delete-experience', [MaqamExperienceController::class, 'deleteMaqamExperience'])->middleware(['auth'])->name('deleteMaqamExp');
 
+// bookings
+Route::get('/bookings-list', [BookingsController::class, 'showAllBookings'])->middleware(['auth'])->name('bookingsNow');
 
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
