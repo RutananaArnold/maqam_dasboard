@@ -13,14 +13,14 @@ class Booking extends Model
 
     protected $fillable = [
         'id',
-        'name',
-        'phone',
+        'userId',
         'gender',
         'dob',
-        'email',
         'nationality',
         'residence',
         'passportPhoto',
         'bookingCategory',
+        'paymentOption',
+        'amount'
     ];
 }

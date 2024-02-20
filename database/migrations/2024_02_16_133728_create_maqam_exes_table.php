@@ -16,7 +16,7 @@ class CreateMaqamExesTable extends Migration
         Schema::create('maqam_exes', function (Blueprint $table) {
             $table->id();
             $table->string('thumbnail');
-            $table->string('videoLink', 1000)->change();
+            $table->string('videoLink', 1000);
             $table->string('description');
             $table->string('detail');
             $table->timestamps();

@@ -43,7 +43,7 @@
                                         <i class="bi bi-people"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6>0</h6>
+                                        <h6>{{ $bookings }}</h6>
                                     </div>
                                 </div>
                             </div>

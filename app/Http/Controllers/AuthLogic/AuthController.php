@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AuthLogic;
 
 use App\Http\Controllers\Controller;
 use App\Models\Advert;
+use App\Models\Booking;
 use App\Models\MaqamEx;
 use App\Models\Package;
 use Illuminate\Http\Request;
@@ -31,6 +32,7 @@ class AuthController extends Controller
         $user =  DB::table('users')->insertGetId([
             'name' => $request->name,
             'email' => $request->email,
+            'phone' => "07xxxxxxx",
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'created_at' => $currentTime,
@@ -78,13 +80,13 @@ class AuthController extends Controller
 
     public function showDashboard()
     {
-
+        $bookings = Booking::count();
         $totalUsers = User::count();
         $totalAdverts = Advert::count();
         $totalPackages = Package::count();
         $maqamExperiences = MaqamEx::count();
 
-        return view('dashboard',  compact('totalAdverts', 'totalUsers', 'totalPackages', 'maqamExperiences'));
+        return view('dashboard',  compact('totalAdverts', 'totalUsers', 'totalPackages', 'maqamExperiences', 'bookings'));
     }
 
 
