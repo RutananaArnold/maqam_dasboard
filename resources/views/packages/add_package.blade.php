@@ -29,6 +29,37 @@
             @csrf <!-- CSRF token for security -->
 
             <div class="form-group">
+                <label for="role">Package Category</label>
+                <select class="form-control" id="category" name="category" required>
+                    <option value="">Select Category</option>
+                    <option value="HAJJ">HAJJ</option>
+                    <option value="UMRAH">UMRAH</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="role">Package Type</label>
+                <select class="form-control" id="type" name="type" required onchange="togglePriceInputs()">
+                    <option value="">Select Type</option>
+                    <option value="STANDARD">STANDARD</option>
+                    <option value="ECONOMY">ECONOMY</option>
+                    <option value="BOTH_STANDARD_ECONOMY">BOTH</option>
+                </select>
+            </div>
+
+            <div id="priceInputs">
+                <div class="form-group">
+                    <label for="standardPrice">Standard Price:</label>
+                    <input type="text" id="standardPrice" name="standardPrice" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="economyPrice">Economy Price:</label>
+                    <input type="text" id="economyPrice" name="economyPrice" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label for="title">Package Title:</label>
                 <input type="text" id="title" name="title" class="form-control" required>
             </div>
@@ -39,13 +70,110 @@
             </div>
 
             <div class="form-group">
-                <label for="image">Package Image:</label>
+                <label for="image">Package Image / Thumbnail:</label>
                 <input type="file" id="image" name="image" class="form-control" required>
             </div>
 
             <div class="form-group">
-                <label for="price">Package Price:</label>
-                <input type="text" id="price" name="price" class="form-control" required>
+                <label for="services">Package Services:</label>
+                <div class="form-group">
+                    <input type="checkbox" id="Accomodation" name="services[Accomodation][name]" value="Accomodation"
+                        onchange="toggleServiceDescription('Accomodation')"> Accomodation
+                    <textarea id="AccomodationDescription" name="services[Accomodation][description]" class="form-control"
+                        style="display: none;"></textarea>
+                    <input type="file" id="AccomodationImages" name="services[Accomodation][images][]"
+                        class="form-control" style="display: none; margin-top: 20px" multiple
+                        onchange="showSelectedImages('Accomodation')">
+                    <div id="selectedImagesContainer_Accomodation" style="display: none;">
+                        Selected Images:
+                        <div id="selectedImages_Accomodation"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="checkbox" id="visaProcessing" name="services[visaProcessing][name]" value="visaProcessing"
+                        onchange="toggleServiceDescription('visaProcessing')"> VISA Processing
+                    <textarea id="visaProcessingDescription" name="services[visaProcessing][description]" class="form-control"
+                        style="display: none;"></textarea>
+                    <input type="file" id="visaProcessingImages" name="services[visaProcessing][images][]"
+                        class="form-control" style="display: none; margin-top: 20px" multiple
+                        onchange="showSelectedImages('visaProcessing')">
+                    <div id="selectedImagesContainer_visaProcessing" style="display: none;">
+                        Selected Images:
+                        <div id="selectedImages_visaProcessing"></div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <input type="checkbox" id="returnFlight" name="services[returnFlight][name]" value="returnFlight"
+                        onchange="toggleServiceDescription('returnFlight')"> Return Flight
+                    <textarea id="returnFlightDescription" name="services[returnFlight][description]" class="form-control"
+                        style="display: none;"></textarea>
+                    <input type="file" id="returnFlightImages" name="services[returnFlight][images][]"
+                        class="form-control" style="display: none; margin-top: 20px" multiple
+                        onchange="showSelectedImages('returnFlight')">
+                    <div id="selectedImagesContainer_returnFlight" style="display: none;">
+                        Selected Images:
+                        <div id="selectedImages_returnFlight"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="checkbox" id="groundTransport" name="services[groundTransport][name]"
+                        value="groundTransport" onchange="toggleServiceDescription('groundTransport')"> Ground Transport
+                    <textarea id="groundTransportDescription" name="services[groundTransport][description]" class="form-control"
+                        style="display: none;"></textarea>
+                    <input type="file" id="groundTransportImages" name="services[groundTransport][images][]"
+                        class="form-control" style="display: none; margin-top: 20px" multiple
+                        onchange="showSelectedImages('groundTransport')">
+                    <div id="selectedImagesContainer_groundTransport" style="display: none;">
+                        Selected Images:
+                        <div id="selectedImages_groundTransport"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="checkbox" id="historicalSitesTour" name="services[historicalSitesTour][name]"
+                        value="historicalSitesTour" onchange="toggleServiceDescription('historicalSitesTour')"> Historical
+                    Sites Tour
+                    <textarea id="historicalSitesTourDescription" name="services[historicalSitesTour][description]" class="form-control"
+                        style="display: none;"></textarea>
+                    <input type="file" id="historicalSitesTourImages" name="services[historicalSitesTour][images][]"
+                        class="form-control" style="display: none; margin-top: 20px" multiple
+                        onchange="showSelectedImages('historicalSitesTour')">
+                    <div id="selectedImagesContainer_historicalSitesTour" style="display: none;">
+                        Selected Images:
+                        <div id="selectedImages_historicalSitesTour"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="checkbox" id="breakfast_iftar" name="services[breakfast_iftar][name]"
+                        value="breakfast_iftar" onchange="toggleServiceDescription('breakfast_iftar')"> Breakfast / Iftar
+                    <textarea id="breakfast_iftarDescription" name="services[breakfast_iftar][description]" class="form-control"
+                        style="display: none;"></textarea>
+                    <input type="file" id="breakfast_iftarImages" name="services[breakfast_iftar][images][]"
+                        class="form-control" style="display: none; margin-top: 20px" multiple
+                        onchange="showSelectedImages('breakfast_iftar')">
+                    <div id="selectedImagesContainer_breakfast_iftar" style="display: none;">
+                        Selected Images:
+                        <div id="selectedImages_breakfast_iftar"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="checkbox" id="train" name="services[train][name]" value="train"
+                        onchange="toggleServiceDescription('train')"> Train
+                    <textarea id="trainDescription" name="services[train][description]" class="form-control" style="display: none;"></textarea>
+                    <input type="file" id="trainImages" name="services[train][images][]" class="form-control"
+                        style="display: none; margin-top: 20px" multiple onchange="showSelectedImages('train')">
+                    <div id="selectedImagesContainer_train" style="display: none;">
+                        Selected Images:
+                        <div id="selectedImages_train"></div>
+                    </div>
+                </div>
+                <!-- Add more services as needed -->
             </div>
 
             <div class="form-group">
@@ -56,4 +184,68 @@
             <button style="margin-top: 30px" type="submit" class="btn btn-primary">Add New Package</button>
         </form>
     </div>
+
+    <script>
+        function togglePriceInputs() {
+            var type = document.getElementById('type').value;
+            var standardPriceInput = document.getElementById('standardPrice');
+            var economyPriceInput = document.getElementById('economyPrice');
+
+            if (type === 'BOTH_STANDARD_ECONOMY') {
+                standardPriceInput.style.display = 'block';
+                economyPriceInput.style.display = 'block';
+            } else if (type === 'STANDARD') {
+                standardPriceInput.style.display = 'block';
+                economyPriceInput.style.display = 'none';
+            } else if (type === 'ECONOMY') {
+                standardPriceInput.style.display = 'none';
+                economyPriceInput.style.display = 'block';
+            } else {
+                standardPriceInput.style.display = 'none';
+                economyPriceInput.style.display = 'none';
+            }
+        }
+
+        function toggleServiceDescription(service) {
+            var descriptionTextarea = document.getElementById(service + 'Description');
+            var imagesInput = document.getElementById(service + 'Images');
+            var selectedImagesContainer = document.getElementById('selectedImagesContainer_' + service);
+            var selectedImagesDiv = document.getElementById('selectedImages_' + service);
+
+            if (document.getElementById(service).checked) {
+                descriptionTextarea.style.display = 'block';
+                imagesInput.style.display = 'block';
+            } else {
+                descriptionTextarea.style.display = 'none';
+                imagesInput.style.display = 'none';
+                selectedImagesContainer.style.display = 'none'; // Hide selected images container
+                selectedImagesDiv.innerHTML = ''; // Clear selected images
+
+                // Clear description
+                descriptionTextarea.value = '';
+
+                // Remove images from data structure
+                delete servicesData[service].images;
+            }
+        }
+
+        // Function to display selected images
+        function showSelectedImages(service) {
+            var imagesInput = document.getElementById(service + 'Images');
+            var selectedImagesContainer = document.getElementById('selectedImagesContainer_' + service);
+            var selectedImagesDiv = document.getElementById('selectedImages_' + service);
+
+            selectedImagesDiv.innerHTML = ''; // Clear previous selected images
+
+            for (var i = 0; i < imagesInput.files.length; i++) {
+                var file = imagesInput.files[i];
+                var imageElement = document.createElement('img');
+                imageElement.src = URL.createObjectURL(file);
+                imageElement.style.maxWidth = '200px'; // Set max width for the displayed image
+                selectedImagesDiv.appendChild(imageElement);
+            }
+
+            selectedImagesContainer.style.display = 'block'; // Show selected images container
+        }
+    </script>
 @endsection

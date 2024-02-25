@@ -22,13 +22,18 @@ class PackageController extends Controller
 
     public function addNewPackage(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string',
-            'dateRange' => 'required|string',
-            'price' => 'required|string',
-            'endDateTime' => 'required|date_format:Y-m-d\TH:i|after:now',
-            'image' => 'required|mimes:jpeg,png,jpg,svg|max:1048',
-        ]);
+        // $request->validate([
+        //     'category' => 'required|string',
+        //     'type' => 'required|string',
+        //     'standardPrice' => 'string',
+        //     'economyPrice' => 'string',
+        //     'title' => 'required|string',
+        //     'dateRange' => 'required|string',
+        //     'services' => 'required|array',
+        //     'endDateTime' => 'required',
+        // ]);
+
+        dd($request->services);
 
         $imageName = time() . '.' . $request->image->extension();
         $request->image->move(public_path('packageImages'), $imageName);
