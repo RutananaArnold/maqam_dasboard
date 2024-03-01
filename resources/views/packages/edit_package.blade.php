@@ -27,7 +27,7 @@
 
         {{-- Display package details --}}
         <div class="advert-details">
-            <img src="{{ asset('packageImages/' . $package->image) }}" alt="Package Image"
+            <img src="{{ asset('packageImages/' . $package->packageImage) }}" alt="Package Image"
                 style="max-width: 100%; height: auto;">
 
             <form method="POST" action="{{ route('packageUpdate') }}" enctype="multipart/form-data">
@@ -48,18 +48,20 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="price">Package Price:</label>
-                    <input type="text" id="price" name="price" value="{{ $package->price }}" class="form-control"
-                        required>
+                    <label for="price">Package Type and Price:</label>
+                    <input type="text" id="price" name="price"
+                        value="{{ $package->type }} - Standard Price: {{ $package->standardPrice }}, Economy Price: {{ $package->economyPrice }}"
+                        class="form-control" readonly>
                 </div>
 
+
                 <div class="form-group">
-                    <label for="image">Change Advert Image:</label>
+                    <label for="image">Change Package Image:</label>
                     <input type="file" id="image" name="image" class="form-control">
                 </div>
 
                 <div class="form-group">
-                    <label for="endDateTime">Advert End DateTime:</label>
+                    <label for="endDateTime">Package End DateTime:</label>
                     <input type="datetime-local" id="endDateTime" name="endDateTime" value="{{ $package->endDateTime }}"
                         class="form-control" required>
                 </div>

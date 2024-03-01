@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Packages;
 
 use App\Http\Controllers\Controller;
 use App\Models\Package;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -22,34 +23,49 @@ class PackageController extends Controller
 
     public function addNewPackage(Request $request)
     {
-        // $request->validate([
-        //     'category' => 'required|string',
-        //     'type' => 'required|string',
-        //     'standardPrice' => 'string',
-        //     'economyPrice' => 'string',
-        //     'title' => 'required|string',
-        //     'dateRange' => 'required|string',
-        //     'services' => 'required|array',
-        //     'endDateTime' => 'required',
-        // ]);
-
-        dd($request->services);
-
-        $imageName = time() . '.' . $request->image->extension();
-        $request->image->move(public_path('packageImages'), $imageName);
-
         $package = new Package();
-        $package->title = $request['title'];
-        $package->dateRange = $request['dateRange'];
-        $package->price = $request['price'];
-        $package->endDateTime = $request['endDateTime'];
-        $package->image = $imageName;
 
+        $category = $request->category;
+        $type = $request->type;
+        $standardPrice = $request->standardPrice;
+        $economyPrice = $request->economyPrice;
+        $title = $request->title;
+        $dateRange = $request->dateRange;
+        $packageImage = $request->packageImage;
+        $services = $request->services;
+        $endDateTime = $request->endDateTime;
+        // dd($services);
+
+        $packageImageName = time() . '.' . $packageImage->extension();
+        $packageImage->move(public_path('packageImages'), $packageImageName);
+
+
+        $package->category = $category;
+        $package->type = $type;
+        $package->standardPrice = $standardPrice;
+        $package->economyPrice = $economyPrice;
+        $package->title = $title;
+        $package->dateRange = $dateRange;
+        $package->endDateTime = $endDateTime;
+        $package->packageImage = $packageImageName;
 
         // Attempt to save the package to the database
         if (!$package->save()) {
             // Handle database save failure
             return redirect()->back()->with('error', 'Failed to save package.');
+        }
+
+        foreach ($services as $service) {
+            if (isset($service['description']) && $service['description'] != null) {
+                $packageServiceImageName = uniqid() . '_' . time() . '.' . $service['images']->extension();
+                $service['images']->move(public_path('packageImages'), $packageServiceImageName);
+                $newService = new Service();
+                $newService->name = $service['name'];
+                $newService->description = $service['description'];
+                $newService->image = $packageServiceImageName;
+                $newService->packageId = $package->id;
+                $newService->save();
+            }
         }
 
         return redirect()->back()->with('success', 'New package Saved successfully');
@@ -73,7 +89,6 @@ class PackageController extends Controller
         $request->validate([
             'title' => 'required|string',
             'dateRange' => 'required|string',
-            'price' => 'required|string',
             'endDateTime' => 'required',
             'image' => 'mimes:jpeg,png,jpg,svg|max:1048',
         ]);
@@ -89,18 +104,17 @@ class PackageController extends Controller
             $package->title = $request['title'];
             $package->dateRange = $request['dateRange'];
             $package->endDateTime = $request['endDateTime'];
-            $package->price = $request['price'];
 
             // Check if a new image is uploaded
             if ($request->hasFile('image')) {
                 // Delete old image
-                if ($package->image) {
-                    unlink(public_path('packageImages/' . $package->image));
+                if ($package->packageImage) {
+                    unlink(public_path('packageImages/' . $package->packageImage));
                 }
 
                 // Store new image
                 $imageName = time() . '.' . $request->image->extension();
-                $package->image = $imageName;
+                $package->packageImage = $imageName;
                 $request->image->move(public_path('packageImages'), $imageName);
             }
 
@@ -125,12 +139,18 @@ class PackageController extends Controller
 
         $package = Package::find($id);
 
+        $services = Service::where("packageId",  $package->id)->get();
+
         if (!$package) {
             return redirect()->back()->with('error', 'Package not found');
         } else {
             // Delete the package's image if it exists
-            if ($package->image) {
-                unlink(public_path('packageImages/' . $package->image));
+            if ($package->packageImage) {
+                unlink(public_path('packageImages/' . $package->packageImage));
+            }
+            foreach ($services as $service) {
+                unlink(public_path('packageImages/' . $service->image));
+                $service->delete();
             }
 
             // Delete the package from the database

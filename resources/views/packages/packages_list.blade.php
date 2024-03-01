@@ -32,8 +32,9 @@
                         <th>ID</th>
                         <th>image</th>
                         <th>title</th>
+                        <th>category</th>
+                        <th>type</th>
                         <th>dateRange</th>
-                        <th>price</th>
                         <th>endDate</th>
                         <th>Actions</th>
                     </tr>
@@ -42,11 +43,12 @@
                     @foreach ($packages as $package)
                         <tr>
                             <td>{{ $package->id }}</td>
-                            <td><img src="{{ asset('packageImages/' . $package->image) }}" alt="Package Image"
+                            <td><img src="{{ asset('packageImages/' . $package->packageImage) }}" alt="Package Image"
                                     style="max-height: 50px; max-width: 80px"></td>
                             <td>{{ $package->title }}</td>
+                            <td>{{ $package->category }}</td>
+                            <td>{{ $package->type }}</td>
                             <td>{{ $package->dateRange }}</td>
-                            <td>USD {{ $package->price }}</td>
                             <td>{{ $package->endDateTime }}</td>
 
                             <td>

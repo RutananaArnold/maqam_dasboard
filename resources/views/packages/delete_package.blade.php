@@ -22,7 +22,7 @@
                 <p><strong>Title:</strong> {{ $package->title }}</p>
                 <p><strong>DateRange:</strong> {{ $package->dateRange }}</p>
                 <p><strong>Price:</strong> {{ $package->price }}</p>
-                <img src="{{ asset('packageImages/' . $package->image) }}" alt="package Image"
+                <img src="{{ asset('packageImages/' . $package->packageImage) }}" alt="package Image"
                     style="max-width: 100%; height: 100px;">
             </div>
 

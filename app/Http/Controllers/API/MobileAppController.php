@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Package;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -183,4 +184,87 @@ class MobileAppController extends Controller
             ], 400);
         }
     }
+
+    public function getPackages(Request $request)
+    {
+        $page = $request->query('page', 1);
+        $perPage = $request->query('perPage', 10);
+
+        $packages = Package::with('services')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        if ($packages->isNotEmpty()) {
+            // Format package image URLs
+            $packages->transform(function ($package) {
+                $package->packageImage = url('packageImages/' . $package->packageImage);
+                // Format service image URLs
+                $package->services->transform(function ($service) {
+                    $service->image = url('packageImages/' . $service->image);
+                    return $service;
+                });
+                return $package;
+            });
+
+            return response()->json([
+                'status' => true,
+                'total' => $packages->count(),
+                'packages' => $packages,
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'No Packages found',
+            ]);
+        }
+    }
+
+
+
+    // public function getPackages(Request $request)
+    // {
+    //     $page = $request->query('page', 1);
+    //     $perPage = $request->query('perPage', 10);
+
+    //     $packages = DB::table('packages')
+    //         ->join('services', 'services.packageId', '=', 'packages.id')
+    //         ->select(
+    //             'packages.id',
+    //             'packages.category',
+    //             'packages.type',
+    //             'packages.standardPrice',
+    //             'packages.economyPrice',
+    //             'packages.title',
+    //             'packages.dateRange',
+    //             'packages.packageImage',
+    //             'packages.endDateTime',
+    //             'services.name',
+    //             'services.description',
+    //             'services.image',
+    //         )
+    //         ->orderBy('packages.created_at', 'desc');
+
+    //     $paginator = $packages->paginate($perPage, ['*'], 'page', $page);
+
+    //     if ($paginator->isNotEmpty()) {
+    //         $availablePackages = $paginator->items();
+
+    //         // Generate URL for package thumbnail images
+    //         foreach ($availablePackages as &$package) {
+    //             $package->packageImage = url('packageImages/' . $package->packageImage);
+    //         }
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'total' => $paginator->total(),
+    //             'current_page' => $paginator->currentPage(),
+    //             'packages' => $availablePackages,
+    //         ], 200);
+    //     } else {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'No Packages found',
+    //         ]);
+    //     }
+    // }
 }

@@ -70,20 +70,20 @@
             </div>
 
             <div class="form-group">
-                <label for="image">Package Image / Thumbnail:</label>
-                <input type="file" id="image" name="image" class="form-control" required>
+                <label for="packageImage">Package Image / Thumbnail:</label>
+                <input type="file" id="packageImage" name="packageImage" class="form-control" required>
             </div>
 
             <div class="form-group">
                 <label for="services">Package Services:</label>
+
                 <div class="form-group">
                     <input type="checkbox" id="Accomodation" name="services[Accomodation][name]" value="Accomodation"
                         onchange="toggleServiceDescription('Accomodation')"> Accomodation
                     <textarea id="AccomodationDescription" name="services[Accomodation][description]" class="form-control"
                         style="display: none;"></textarea>
-                    <input type="file" id="AccomodationImages" name="services[Accomodation][images][]"
-                        class="form-control" style="display: none; margin-top: 20px" multiple
-                        onchange="showSelectedImages('Accomodation')">
+                    <input type="file" id="AccomodationImages" name="services[Accomodation][images]" class="form-control"
+                        style="display: none; margin-top: 20px" onchange="showSelectedImages('Accomodation')">
                     <div id="selectedImagesContainer_Accomodation" style="display: none;">
                         Selected Images:
                         <div id="selectedImages_Accomodation"></div>
@@ -95,8 +95,8 @@
                         onchange="toggleServiceDescription('visaProcessing')"> VISA Processing
                     <textarea id="visaProcessingDescription" name="services[visaProcessing][description]" class="form-control"
                         style="display: none;"></textarea>
-                    <input type="file" id="visaProcessingImages" name="services[visaProcessing][images][]"
-                        class="form-control" style="display: none; margin-top: 20px" multiple
+                    <input type="file" id="visaProcessingImages" name="services[visaProcessing][images]"
+                        class="form-control" style="display: none; margin-top: 20px"
                         onchange="showSelectedImages('visaProcessing')">
                     <div id="selectedImagesContainer_visaProcessing" style="display: none;">
                         Selected Images:
@@ -104,14 +104,13 @@
                     </div>
                 </div>
 
-
                 <div class="form-group">
                     <input type="checkbox" id="returnFlight" name="services[returnFlight][name]" value="returnFlight"
                         onchange="toggleServiceDescription('returnFlight')"> Return Flight
                     <textarea id="returnFlightDescription" name="services[returnFlight][description]" class="form-control"
                         style="display: none;"></textarea>
-                    <input type="file" id="returnFlightImages" name="services[returnFlight][images][]"
-                        class="form-control" style="display: none; margin-top: 20px" multiple
+                    <input type="file" id="returnFlightImages" name="services[returnFlight][images]"
+                        class="form-control" style="display: none; margin-top: 20px"
                         onchange="showSelectedImages('returnFlight')">
                     <div id="selectedImagesContainer_returnFlight" style="display: none;">
                         Selected Images:
@@ -124,8 +123,8 @@
                         value="groundTransport" onchange="toggleServiceDescription('groundTransport')"> Ground Transport
                     <textarea id="groundTransportDescription" name="services[groundTransport][description]" class="form-control"
                         style="display: none;"></textarea>
-                    <input type="file" id="groundTransportImages" name="services[groundTransport][images][]"
-                        class="form-control" style="display: none; margin-top: 20px" multiple
+                    <input type="file" id="groundTransportImages" name="services[groundTransport][images]"
+                        class="form-control" style="display: none; margin-top: 20px"
                         onchange="showSelectedImages('groundTransport')">
                     <div id="selectedImagesContainer_groundTransport" style="display: none;">
                         Selected Images:
@@ -139,8 +138,8 @@
                     Sites Tour
                     <textarea id="historicalSitesTourDescription" name="services[historicalSitesTour][description]" class="form-control"
                         style="display: none;"></textarea>
-                    <input type="file" id="historicalSitesTourImages" name="services[historicalSitesTour][images][]"
-                        class="form-control" style="display: none; margin-top: 20px" multiple
+                    <input type="file" id="historicalSitesTourImages" name="services[historicalSitesTour][images]"
+                        class="form-control" style="display: none; margin-top: 20px"
                         onchange="showSelectedImages('historicalSitesTour')">
                     <div id="selectedImagesContainer_historicalSitesTour" style="display: none;">
                         Selected Images:
@@ -153,8 +152,8 @@
                         value="breakfast_iftar" onchange="toggleServiceDescription('breakfast_iftar')"> Breakfast / Iftar
                     <textarea id="breakfast_iftarDescription" name="services[breakfast_iftar][description]" class="form-control"
                         style="display: none;"></textarea>
-                    <input type="file" id="breakfast_iftarImages" name="services[breakfast_iftar][images][]"
-                        class="form-control" style="display: none; margin-top: 20px" multiple
+                    <input type="file" id="breakfast_iftarImages" name="services[breakfast_iftar][images]"
+                        class="form-control" style="display: none; margin-top: 20px"
                         onchange="showSelectedImages('breakfast_iftar')">
                     <div id="selectedImagesContainer_breakfast_iftar" style="display: none;">
                         Selected Images:
@@ -166,8 +165,8 @@
                     <input type="checkbox" id="train" name="services[train][name]" value="train"
                         onchange="toggleServiceDescription('train')"> Train
                     <textarea id="trainDescription" name="services[train][description]" class="form-control" style="display: none;"></textarea>
-                    <input type="file" id="trainImages" name="services[train][images][]" class="form-control"
-                        style="display: none; margin-top: 20px" multiple onchange="showSelectedImages('train')">
+                    <input type="file" id="trainImages" name="services[train][images]" class="form-control"
+                        style="display: none; margin-top: 20px" onchange="showSelectedImages('train')">
                     <div id="selectedImagesContainer_train" style="display: none;">
                         Selected Images:
                         <div id="selectedImages_train"></div>
@@ -215,17 +214,11 @@
             if (document.getElementById(service).checked) {
                 descriptionTextarea.style.display = 'block';
                 imagesInput.style.display = 'block';
+
             } else {
                 descriptionTextarea.style.display = 'none';
                 imagesInput.style.display = 'none';
                 selectedImagesContainer.style.display = 'none'; // Hide selected images container
-                selectedImagesDiv.innerHTML = ''; // Clear selected images
-
-                // Clear description
-                descriptionTextarea.value = '';
-
-                // Remove images from data structure
-                delete servicesData[service].images;
             }
         }
 
