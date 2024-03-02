@@ -49,7 +49,7 @@
                             <td>{{ $booking->gender }}</td>
                             <td>{{ $booking->nationality }}</td>
                             <td>{{ $booking->residence }}</td>
-                            <td>{{ $booking->bookingCategory }}</td>
+                            <td>{{ $booking->category }}</td>
                             <td>
                                 <a href="" class="btn btn-outline-warning btn-sm" style="width: 6em;"><i
                                         class="fa fa-pencil" aria-hidden="true"></i> UPDATE</a>

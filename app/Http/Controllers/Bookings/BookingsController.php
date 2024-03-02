@@ -12,6 +12,7 @@ class BookingsController extends Controller
     {
         $bookings = DB::table('bookings')
             ->join('users', 'users.id', '=', 'bookings.userId')
+            ->join('packages', 'packages.id', '=', 'bookings.packageId')
             ->orderBy('bookings.created_at', 'desc')
             ->get();
         return view('bookings.view_all_bookings', ['bookings' => $bookings]);
