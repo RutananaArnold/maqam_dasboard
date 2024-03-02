@@ -19,8 +19,7 @@ class Booking extends Model
         'nationality',
         'residence',
         'passportPhoto',
-        'bookingCategory',
+        'packageId',
         'paymentOption',
-        'amount'
     ];
 }

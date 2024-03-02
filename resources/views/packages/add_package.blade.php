@@ -43,7 +43,7 @@
                     <option value="">Select Type</option>
                     <option value="STANDARD">STANDARD</option>
                     <option value="ECONOMY">ECONOMY</option>
-                    <option value="BOTH_STANDARD_ECONOMY">BOTH</option>
+                    <option value="BOTH">BOTH</option>
                 </select>
             </div>
 
@@ -190,7 +190,7 @@
             var standardPriceInput = document.getElementById('standardPrice');
             var economyPriceInput = document.getElementById('economyPrice');
 
-            if (type === 'BOTH_STANDARD_ECONOMY') {
+            if (type === 'BOTH') {
                 standardPriceInput.style.display = 'block';
                 economyPriceInput.style.display = 'block';
             } else if (type === 'STANDARD') {

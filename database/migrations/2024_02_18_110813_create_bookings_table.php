@@ -21,9 +21,8 @@ class CreateBookingsTable extends Migration
             $table->string('nationality');
             $table->string('residence');
             $table->string('passportPhoto');
-            $table->string('bookingCategory');
+            $table->foreignId('packageId')->unsigned()->references('id')->on('packages');
             $table->string('paymentOption')->nullable();
-            $table->string('amount')->nullable();
             $table->timestamps();
         });
     }

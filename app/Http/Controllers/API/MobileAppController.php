@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\BookingPayment;
 use App\Models\Package;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +23,7 @@ class MobileAppController extends Controller
         $nationality = $request->nationality;
         $residence = $request->residence;
         // $passportPhoto = $request->passportPhoto;
-        $bookingCategory = $request->bookingCategory;
+        $packageId = $request->packageId;
 
         if (!empty($userId)) {
             // identify user
@@ -45,7 +46,7 @@ class MobileAppController extends Controller
             $newBooking->nationality = $nationality;
             $newBooking->residence = $residence;
             $newBooking->passportPhoto = $imageName;
-            $newBooking->bookingCategory = $bookingCategory;
+            $newBooking->packageId = $packageId;
             if ($newBooking->save()) {
                 return response()->json([
                     'message' => 'Booking saved successfully',
@@ -88,7 +89,7 @@ class MobileAppController extends Controller
             $newBooking->nationality = $nationality;
             $newBooking->residence = $residence;
             $newBooking->passportPhoto = $imageName;
-            $newBooking->bookingCategory = $bookingCategory;
+            $newBooking->packageId = $packageId;
             if ($newBooking->save()) {
                 return response()->json([
                     'message' => 'Booking saved successfully',
@@ -116,6 +117,7 @@ class MobileAppController extends Controller
         $bookings = DB::table('bookings')
             ->join('users', 'users.id', '=', 'bookings.userId')
             ->join('user_roles', 'user_roles.id', '=', 'users.role')
+            ->join('packages', 'packages.id', '=', 'bookings.packageId')
             ->select(
                 'users.id as userId',
                 'bookings.id as bookingId',
@@ -127,10 +129,9 @@ class MobileAppController extends Controller
                 'bookings.dob',
                 'bookings.nationality',
                 'bookings.residence',
-                'bookings.bookingCategory',
                 'bookings.paymentOption',
-                'bookings.amount',
                 'bookings.passportPhoto',
+                'packages.category'
             )
             ->where('bookings.userId', $request['userId'])
             ->orderBy('bookings.created_at', 'desc');
@@ -159,7 +160,7 @@ class MobileAppController extends Controller
         }
     }
 
-    public function updateBookingPaymentOption(Request $request)
+    public function updateBookingPayment(Request $request)
     {
         $request->validate([
             'bookingId' => 'required',
@@ -170,17 +171,31 @@ class MobileAppController extends Controller
         $paymentOption = $request['paymentOption'];
         $bookingAmount = $request['amount'];
 
-        $affectedBooking = Booking::where("id", $bookingId)->update(["paymentOption" => $paymentOption, "amount" => $bookingAmount]);
+        $payments = new BookingPayment();
+        $payments->bookingId = $bookingId;
+        $payments->amount = $bookingAmount;
+
+        try {
+            $payments->save();
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => "Failed to save payment: " . $e->getMessage()
+            ], 500);
+        }
+
+
+        $affectedBooking = Booking::where("id", $bookingId)->update(["paymentOption" => $paymentOption]);
 
         if ($affectedBooking) {
             return response()->json([
                 'status' => true,
-                'message' => "Payment Option updated"
+                'message' => "Payment Details updated"
             ], 200);
         } else {
             return response()->json([
                 'status' => false,
-                'message' => "Payment Option failed to get updated"
+                'message' => "Payment Details failed to get updated"
             ], 400);
         }
     }
@@ -192,11 +207,12 @@ class MobileAppController extends Controller
 
         $packages = Package::with('services')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate($perPage, ['*'], 'page', $page);
 
         if ($packages->isNotEmpty()) {
+
             // Format package image URLs
-            $packages->transform(function ($package) {
+            $packages->getCollection()->transform(function ($package) {
                 $package->packageImage = url('packageImages/' . $package->packageImage);
                 // Format service image URLs
                 $package->services->transform(function ($service) {
@@ -208,8 +224,9 @@ class MobileAppController extends Controller
 
             return response()->json([
                 'status' => true,
-                'total' => $packages->count(),
-                'packages' => $packages,
+                'total' => $packages->total(),
+                'current_page' => $packages->currentPage(),
+                'packages' => $packages->items(),
             ], 200);
         } else {
             return response()->json([
@@ -218,53 +235,4 @@ class MobileAppController extends Controller
             ]);
         }
     }
-
-
-
-    // public function getPackages(Request $request)
-    // {
-    //     $page = $request->query('page', 1);
-    //     $perPage = $request->query('perPage', 10);
-
-    //     $packages = DB::table('packages')
-    //         ->join('services', 'services.packageId', '=', 'packages.id')
-    //         ->select(
-    //             'packages.id',
-    //             'packages.category',
-    //             'packages.type',
-    //             'packages.standardPrice',
-    //             'packages.economyPrice',
-    //             'packages.title',
-    //             'packages.dateRange',
-    //             'packages.packageImage',
-    //             'packages.endDateTime',
-    //             'services.name',
-    //             'services.description',
-    //             'services.image',
-    //         )
-    //         ->orderBy('packages.created_at', 'desc');
-
-    //     $paginator = $packages->paginate($perPage, ['*'], 'page', $page);
-
-    //     if ($paginator->isNotEmpty()) {
-    //         $availablePackages = $paginator->items();
-
-    //         // Generate URL for package thumbnail images
-    //         foreach ($availablePackages as &$package) {
-    //             $package->packageImage = url('packageImages/' . $package->packageImage);
-    //         }
-
-    //         return response()->json([
-    //             'status' => true,
-    //             'total' => $paginator->total(),
-    //             'current_page' => $paginator->currentPage(),
-    //             'packages' => $availablePackages,
-    //         ], 200);
-    //     } else {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'No Packages found',
-    //         ]);
-    //     }
-    // }
 }

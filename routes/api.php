@@ -21,6 +21,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/create-booking', [MobileAppController::class, 'createBooking']);
 Route::post('/user-bookings', [MobileAppController::class, 'getUserBookings']);
-Route::post('/update-booking-payment', [MobileAppController::class, 'updateBookingPaymentOption']);
+Route::post('/update-booking-payment', [MobileAppController::class, 'updateBookingPayment']);
 Route::get('/get-packages', [MobileAppController::class, 'getPackages']);
-
