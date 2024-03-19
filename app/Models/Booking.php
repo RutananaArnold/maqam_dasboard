@@ -14,12 +14,8 @@ class Booking extends Model
     protected $fillable = [
         'id',
         'userId',
-        'gender',
-        'dob',
-        'nationality',
-        'residence',
-        'passportPhoto',
         'packageId',
         'paymentOption',
+        'travelDocument'
     ];
 }

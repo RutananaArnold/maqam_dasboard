@@ -23,3 +23,5 @@ Route::post('/create-booking', [MobileAppController::class, 'createBooking']);
 Route::post('/user-bookings', [MobileAppController::class, 'getUserBookings']);
 Route::post('/update-booking-payment', [MobileAppController::class, 'updateBookingPayment']);
 Route::get('/get-packages', [MobileAppController::class, 'getPackages']);
+Route::post('/payment-history', [MobileAppController::class, 'getPaymentHistory']);
+Route::post('/get-client-travel-doc', [MobileAppController::class, 'fetchClientTravelDoc']);

@@ -41,8 +41,8 @@
                 <label for="role">Package Type</label>
                 <select class="form-control" id="type" name="type" required onchange="togglePriceInputs()">
                     <option value="">Select Type</option>
-                    <option value="STANDARD">STANDARD</option>
-                    <option value="ECONOMY">ECONOMY</option>
+                    <option value="Standard">STANDARD</option>
+                    <option value="Economy">ECONOMY</option>
                     <option value="BOTH">BOTH</option>
                 </select>
             </div>
@@ -62,6 +62,11 @@
             <div class="form-group">
                 <label for="title">Package Title:</label>
                 <input type="text" id="title" name="title" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="packageDescription">Package Description</label>
+                <textarea id="packageDescription" name="packageDescription" class="form-control"></textarea>
             </div>
 
             <div class="form-group">
@@ -193,10 +198,10 @@
             if (type === 'BOTH') {
                 standardPriceInput.style.display = 'block';
                 economyPriceInput.style.display = 'block';
-            } else if (type === 'STANDARD') {
+            } else if (type === 'Standard') {
                 standardPriceInput.style.display = 'block';
                 economyPriceInput.style.display = 'none';
-            } else if (type === 'ECONOMY') {
+            } else if (type === 'Economy') {
                 standardPriceInput.style.display = 'none';
                 economyPriceInput.style.display = 'block';
             } else {

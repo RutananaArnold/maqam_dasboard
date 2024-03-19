@@ -27,10 +27,11 @@ class MobileAppController extends Controller
         $residence = $request->residence;
         $passportPhoto = $request->passportPhoto;
         $packageId = $request->packageId;
+        $ninOrPassport = $request->ninOrPassport;
 
         if (!empty($userId)) {
             // identify user
-            $user = DB::table('users')->select('id', 'name', 'email', 'phone', 'role')->find($userId);
+            $user = DB::table('users')->select('id', 'name', 'email', 'phone', 'role', 'gender', 'dob', 'nationality', 'residence', 'NIN_or_Passport', 'passportPhoto')->find($userId);
 
             if (!$user) {
                 return response()->json(['message' => 'User not found'], 400);
@@ -38,28 +39,16 @@ class MobileAppController extends Controller
 
             $existingUserId = $user->id;
 
-            // starting saving booking of the user
-            // Decode base64 image string
-            $decoded_file = base64_decode($passportPhoto); // decode the file
-            $mime_type = finfo_buffer(finfo_open(), $decoded_file, FILEINFO_MIME_TYPE); // extract mime type
-            $extension = $this->mime2ext($mime_type); // extract extension from mime type
-            $file = uniqid() . '.' . $extension; // rename file as a unique name
+            // get user passport photo
+            $passportPhotoPath = $user->passportPhoto;
+            $passportPhotoUrl = url('bookingImages/' . $passportPhotoPath);
 
-            try {
-                Storage::disk('booking_uploads')->put($file, $decoded_file);
-            } catch (Exception $e) {
-                //throw $th;
-                echo json_encode($e->getMessage());
-            }
+            // Include the image URL in your response
+            $user->passportPhoto = $passportPhotoUrl;
 
             // create a new booking
             $newBooking = new Booking();
             $newBooking->userId = $existingUserId;
-            $newBooking->gender = $gender;
-            $newBooking->dob = $dob;
-            $newBooking->nationality = $nationality;
-            $newBooking->residence = $residence;
-            $newBooking->passportPhoto = $file;
             $newBooking->packageId = $packageId;
             if ($newBooking->save()) {
                 return response()->json([
@@ -76,23 +65,6 @@ class MobileAppController extends Controller
             // if userId is empty, create an account for the user with their number as their password
             $currentDateTime = now();
 
-            $id = DB::table('users')->insertGetId([
-                'name' => $name,
-                'email' => $email ?? "example@gmail.com",
-                'phone' => $phone,
-                'password' => Hash::make($phone),
-                'role' => 3,
-                'created_at' => $currentDateTime,
-                'updated_at' => $currentDateTime
-            ]);
-
-            $user = DB::table('users')->select('id', 'name', 'email', 'phone', 'role')->find($id);
-
-            if (!$user) {
-                return response()->json(['message' => 'User not found'], 400);
-            }
-
-            $newUserId = $user->id;
             // Decode base64 image string
             $decoded_file = base64_decode($passportPhoto); // decode the file
             $mime_type = finfo_buffer(finfo_open(), $decoded_file, FILEINFO_MIME_TYPE); // extract mime type
@@ -105,14 +77,39 @@ class MobileAppController extends Controller
                 //throw $th;
                 echo json_encode($e->getMessage());
             }
+
+            $id = DB::table('users')->insertGetId([
+                'name' => $name,
+                'email' => $email ?? "example@gmail.com",
+                'phone' => $phone,
+                'password' => Hash::make($phone),
+                'role' => 3,
+                'gender' => $gender,
+                'dob' => $dob ?? '12/01/1900',
+                'nationality' => $nationality,
+                'residence' => $residence,
+                'NIN_or_Passport' => $ninOrPassport,
+                'passportPhoto' => $file,
+                'created_at' => $currentDateTime,
+                'updated_at' => $currentDateTime
+            ]);
+
+            $user = DB::table('users')->select('id', 'name', 'email', 'phone', 'role', 'gender', 'dob', 'nationality', 'residence', 'NIN_or_Passport', 'passportPhoto')->find($id);
+
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 400);
+            }
+
+            $passportPhotoPath = $user->passportPhoto;
+            $passportPhotoUrl = url('bookingImages/' . $passportPhotoPath);
+
+            // Include the image URL in your response
+            $user->passportPhoto = $passportPhotoUrl;
+
+            $newUserId = $user->id;
             // create a new booking
             $newBooking = new Booking();
             $newBooking->userId = $newUserId;
-            $newBooking->gender = $gender;
-            $newBooking->dob = $dob;
-            $newBooking->nationality = $nationality;
-            $newBooking->residence = $residence;
-            $newBooking->passportPhoto = $file;
             $newBooking->packageId = $packageId;
             if ($newBooking->save()) {
                 return response()->json([
@@ -196,6 +193,7 @@ class MobileAppController extends Controller
             ->join('users', 'users.id', '=', 'bookings.userId')
             ->join('user_roles', 'user_roles.id', '=', 'users.role')
             ->join('packages', 'packages.id', '=', 'bookings.packageId')
+            ->join('booking_payments', 'booking_payments.bookingId', '=', 'bookings.id')
             ->select(
                 'users.id as userId',
                 'bookings.id as bookingId',
@@ -203,13 +201,14 @@ class MobileAppController extends Controller
                 'users.phone',
                 'users.email',
                 'user_roles.Role',
-                'bookings.gender',
-                'bookings.dob',
-                'bookings.nationality',
-                'bookings.residence',
+                'users.gender',
+                'users.dob',
+                'users.nationality',
+                'users.residence',
+                'users.passportPhoto',
                 'bookings.paymentOption',
-                'bookings.passportPhoto',
-                'packages.category'
+                'packages.category',
+                'bookings.created_at',
             )
             ->where('bookings.userId', $request['userId'])
             ->orderBy('bookings.created_at', 'desc');
@@ -311,6 +310,60 @@ class MobileAppController extends Controller
                 'status' => false,
                 'message' => 'No Packages found',
             ]);
+        }
+    }
+
+    public function getPaymentHistory(Request $request)
+    {
+        $bookId = $request->bookingId;
+
+        $payments = DB::table('booking_payments')
+            ->join('bookings', 'bookings.id', '=', 'booking_payments.bookingId')
+            ->select(
+                'booking_payments.amount',
+                'bookings.paymentOption',
+                'booking_payments.created_at'
+            )
+            ->where('booking_payments.bookingId', $bookId)
+            ->orderBy('booking_payments.created_at', 'desc')
+            ->get();
+
+        if ($payments->isNotEmpty()) {
+            return response()->json([
+                'status' => true,
+                'payments' => $payments,
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'No payments made yet',
+            ],);
+        }
+    }
+
+    public function fetchClientTravelDoc(Request $request)
+    {
+        $bookId = $request->bookingId;
+
+        $booking = Booking::select('travelDocument')->where('bookings.id', $bookId)->first();
+
+        if (!$booking) {
+            return response()->json(['error' => 'Document path not found.'], 404);
+        }
+        $path = $booking->travelDocument;
+
+        if ($path != null) {
+
+            $filePath =  url('travelDocuments/' . $path);
+            return response()->json([
+                'status' => true,
+                'file_path' => $filePath,
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => "Travel Documents not yet uploaded.",
+            ],);
         }
     }
 }

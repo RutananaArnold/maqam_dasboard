@@ -17,6 +17,7 @@ class CreatePackagesTable extends Migration
             $table->id();
             $table->string('category');
             $table->string('type');
+            $table->text('description')->nullable();
             $table->string('standardPrice')->nullable();
             $table->string('economyPrice')->nullable();
             $table->string('title');

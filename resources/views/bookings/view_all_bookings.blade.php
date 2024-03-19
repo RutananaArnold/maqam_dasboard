@@ -29,7 +29,6 @@
             <table class="table datatable">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>name</th>
                         <th>phone</th>
                         <th>gender</th>
@@ -43,7 +42,6 @@
 
                     @foreach ($bookings as $booking)
                         <tr>
-                            <td>{{ $booking->id }}</td>
                             <td>{{ $booking->name }}</td>
                             <td>{{ $booking->phone }}</td>
                             <td>{{ $booking->gender }}</td>
@@ -51,8 +49,9 @@
                             <td>{{ $booking->residence }}</td>
                             <td>{{ $booking->category }}</td>
                             <td>
-                                <a href="" class="btn btn-outline-warning btn-sm" style="width: 6em;"><i
-                                        class="fa fa-pencil" aria-hidden="true"></i> UPDATE</a>
+                                <a href="{{ route('showUserbooking', ['bookingId' => $booking->bookId]) }}"
+                                    class="btn btn-outline-warning btn-sm" style="width: 6em;"><i class="fa fa-pencil"
+                                        aria-hidden="true"></i> UPDATE</a>
                             </td>
                         </tr>
                     @endforeach

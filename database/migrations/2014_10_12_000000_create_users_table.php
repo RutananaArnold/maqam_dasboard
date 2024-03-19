@@ -21,6 +21,12 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->foreignId('role')->unsigned()->references('id')->on('user_roles');
+            $table->string('gender');
+            $table->string('dob');
+            $table->string('nationality');
+            $table->string('residence');
+            $table->string('NIN_or_Passport');
+            $table->string('passportPhoto');
             $table->rememberToken();
             $table->timestamps();
         });

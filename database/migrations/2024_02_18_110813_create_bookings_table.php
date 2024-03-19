@@ -16,13 +16,9 @@ class CreateBookingsTable extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('userId')->unsigned()->references('id')->on('users');
-            $table->string('gender');
-            $table->string('dob');
-            $table->string('nationality');
-            $table->string('residence');
-            $table->string('passportPhoto');
             $table->foreignId('packageId')->unsigned()->references('id')->on('packages');
             $table->string('paymentOption')->nullable();
+            $table->string('travelDocument')->nullable();
             $table->timestamps();
         });
     }

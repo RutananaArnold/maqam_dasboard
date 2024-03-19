@@ -30,11 +30,11 @@ class PackageController extends Controller
         $standardPrice = $request->standardPrice;
         $economyPrice = $request->economyPrice;
         $title = $request->title;
+        $packageDescription = $request->packageDescription;
         $dateRange = $request->dateRange;
         $packageImage = $request->packageImage;
         $services = $request->services;
         $endDateTime = $request->endDateTime;
-        // dd($services);
 
         $packageImageName = time() . '.' . $packageImage->extension();
         $packageImage->move(public_path('packageImages'), $packageImageName);
@@ -45,6 +45,7 @@ class PackageController extends Controller
         $package->standardPrice = $standardPrice;
         $package->economyPrice = $economyPrice;
         $package->title = $title;
+        $package->description = $packageDescription;
         $package->dateRange = $dateRange;
         $package->endDateTime = $endDateTime;
         $package->packageImage = $packageImageName;
@@ -88,6 +89,7 @@ class PackageController extends Controller
     {
         $request->validate([
             'title' => 'required|string',
+            'description' => 'required',
             'dateRange' => 'required|string',
             'endDateTime' => 'required',
             'image' => 'mimes:jpeg,png,jpg,svg|max:1048',
@@ -102,6 +104,7 @@ class PackageController extends Controller
         } else {
 
             $package->title = $request['title'];
+            $package->description = $request['description'];
             $package->dateRange = $request['dateRange'];
             $package->endDateTime = $request['endDateTime'];
 

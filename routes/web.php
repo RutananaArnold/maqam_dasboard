@@ -62,6 +62,9 @@ Route::post('/delete-experience', [MaqamExperienceController::class, 'deleteMaqa
 
 // bookings
 Route::get('/bookings-list', [BookingsController::class, 'showAllBookings'])->middleware(['auth'])->name('bookingsNow');
+Route::get('/client-booking/{bookingId}', [BookingsController::class, 'viewBooking'])->middleware(['auth'])->name('showUserbooking');
+Route::get('/download-passport/{userId}', [BookingsController::class, 'downloadPassport'])->middleware(['auth'])->name('savePassport');
+Route::post('/upload-client-document', [BookingsController::class, 'attachTravelDocument'])->middleware(['auth'])->name('uploadTravelDocument');
 
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

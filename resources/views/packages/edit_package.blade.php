@@ -42,6 +42,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="title">Package Description:</label>
+                    <textarea id="description" name="description" class="form-control"> {{ $package->description }} </textarea>
+                </div>
+
+                <div class="form-group">
                     <label for="description">Package DateRange:</label>
                     <input type="text" id="dateRange" name="dateRange" value="{{ $package->dateRange }}"
                         class="form-control" required>
