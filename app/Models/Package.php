@@ -30,23 +30,23 @@ class Package extends Model
     {
         $pricing = [];
 
-        if ($this->type === 'STANDARD') {
+        if ($this->type === 'Standard') {
             $pricing[] = [
-                'type' => 'STANDARD',
+                'type' => 'Standard',
                 'price' => $this->standardPrice
             ];
-        } elseif ($this->type === 'ECONOMY') {
+        } elseif ($this->type === 'Economy') {
             $pricing[] = [
-                'type' => 'ECONOMY',
+                'type' => 'Economy',
                 'price' => $this->economyPrice
             ];
         } elseif ($this->type === 'BOTH') {
             $pricing[] = [
-                'type' => 'STANDARD',
+                'type' => 'Standard',
                 'price' => $this->standardPrice
             ];
             $pricing[] = [
-                'type' => 'ECONOMY',
+                'type' => 'Economy',
                 'price' => $this->economyPrice
             ];
         }
