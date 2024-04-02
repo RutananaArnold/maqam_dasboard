@@ -29,19 +29,20 @@ class AuthController extends Controller
     {
         $currentTime = now();
 
-        $user =  DB::table('users')->insertGetId([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => "07xxxxxxx",
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'created_at' => $currentTime,
-            'updated_at' => $currentTime
-        ]);
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+        $user->password = Hash::make($request->password);
+        $user->role = $request->role;
+        $user->created_at = $currentTime;
+        $user->updated_at = $currentTime;
 
 
-        if ($user) {
-            return redirect()->back()->with('success', 'New user registered successfully');
+        if ($user->save()) {
+            return redirect()->route('login')->with('success', 'New user registered successfully');
+        } else {
+            return redirect()->back()->with('error', 'failed registration');
         }
     }
 
@@ -89,9 +90,13 @@ class AuthController extends Controller
         return view('dashboard',  compact('totalAdverts', 'totalUsers', 'totalPackages', 'maqamExperiences', 'bookings'));
     }
 
+    public function showProfile()
+    {
+        return view('profile');
+    }
 
     //logout logic
-    protected function logout(Request $request)
+    public function logout(Request $request)
     {
         // Your custom logic here, if needed
 

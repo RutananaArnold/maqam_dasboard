@@ -18,18 +18,18 @@ use App\Http\Controllers\Packages\PackageController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [AuthController::class, 'registration'])->name('registeruser');
 
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('loginuser');
 
 Route::get('/dashboard', [AuthController::class, 'showDashboard'])->middleware(['auth'])->name('dashboard');
-
+Route::get('/profile', [AuthController::class, 'showProfile'])->middleware(['auth'])->name('profile-page');
 
 //adverts
 Route::get('/view-adverts', [AdvertController::class, 'showAdverts'])->middleware(['auth'])->name('advertsList');

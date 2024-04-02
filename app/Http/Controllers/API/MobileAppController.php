@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookingPayment;
 use App\Models\Package;
+use App\Models\User;
 use Exception;
 use finfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class MobileAppController extends Controller
@@ -365,5 +367,33 @@ class MobileAppController extends Controller
                 'message' => "Travel Documents not yet uploaded.",
             ],);
         }
+    }
+
+    public function fetchAdverts(Request $request)
+    {
+    }
+
+    public function fetchMaqamExperiences(Request $request)
+    {
+    }
+
+    public function loginClientInApp(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|string',
+            "password" => 'required|string',
+        ]);
+
+        $user = User::where('phone', $request->phone)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid phone number or password'], 401);
+        }
+
+
+        return response()->json([
+            'message' => 'Successful login',
+            'user' => $user,
+        ], 200);
     }
 }
