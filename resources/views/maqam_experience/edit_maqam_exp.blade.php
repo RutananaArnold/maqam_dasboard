@@ -28,7 +28,7 @@
         {{-- Display advert details --}}
         <div class="advert-details">
             <div>
-                {!! $exp->videoLink !!}
+                <iframe width="560" height="315" src="{{ $exp->videoLink }}" frameborder="0" allowfullscreen></iframe>
             </div>
 
             <img src="{{ asset('maqamExpImages/' . $exp->thumbnail) }}" alt="Advert Image"

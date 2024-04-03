@@ -48,7 +48,8 @@ class BookingsController extends Controller
                 'users.residence',
                 'users.NIN_or_Passport',
                 'users.passportPhoto',
-                'bookings.id as bookingId'
+                'bookings.id as bookingId',
+                'bookings.travelDocument'
             )
             ->where('bookings.id', $bookId)
             ->orderBy('bookings.created_at', 'desc')
@@ -95,6 +96,17 @@ class BookingsController extends Controller
 
         if (!$pdf_file->isValid()) {
             return redirect()->back()->with('error', 'Invalid PDF file.');
+        }
+
+        // Get the current travel document file name
+        $currentDocument = Booking::where('id', $bookingId)->value('travelDocument');
+
+        // Delete the current travel document file if it exists
+        if ($currentDocument) {
+            $filePath = public_path('travelDocuments/' . $currentDocument);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
         }
 
         $uniqueFileName = uniqid() . $pdf_file->getClientOriginalName();

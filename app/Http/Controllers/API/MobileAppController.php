@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Advert;
 use App\Models\Booking;
 use App\Models\BookingPayment;
+use App\Models\MaqamEx;
 use App\Models\Package;
 use App\Models\User;
 use Exception;
@@ -371,10 +373,54 @@ class MobileAppController extends Controller
 
     public function fetchAdverts(Request $request)
     {
+        $page = $request->query('page', 1);
+        $perPage = $request->query('perPage', 10);
+
+        $adverts = Advert::paginate($perPage, ['*'], 'page', $page);
+        if ($adverts->isNotEmpty()) {
+            $adverts->getCollection()->transform(function ($advert) {
+                $advert->image = url('advertImages/' . $advert->image);
+                return $advert;
+            });
+
+            return response()->json([
+                'status' => true,
+                'total' => $adverts->total(),
+                'current_page' => $adverts->currentPage(),
+                'adverts' => $adverts->items()
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'No Adverts found',
+            ]);
+        }
     }
 
     public function fetchMaqamExperiences(Request $request)
     {
+        $page = $request->query('page', 1);
+        $perPage = $request->query('perPage', 10);
+
+        $experiences = MaqamEx::paginate($perPage, ['*'], 'page', $page);
+        if ($experiences->isNotEmpty()) {
+            $experiences->getCollection()->transform(function ($experience) {
+                $experience->thumbnail = url('maqamExpImages/' . $experience->thumbnail);
+                return $experience;
+            });
+
+            return response()->json([
+                'status' => true,
+                'total' => $experiences->total(),
+                'current_page' => $experiences->currentPage(),
+                'experiences' => $experiences->items()
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'No Maqam Experiences found',
+            ]);
+        }
     }
 
     public function loginClientInApp(Request $request)

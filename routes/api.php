@@ -26,3 +26,5 @@ Route::get('/get-packages', [MobileAppController::class, 'getPackages']);
 Route::post('/payment-history', [MobileAppController::class, 'getPaymentHistory']);
 Route::post('/get-client-travel-doc', [MobileAppController::class, 'fetchClientTravelDoc']);
 Route::post('/login-client', [MobileAppController::class, 'loginClientInApp']);
+Route::get('/get-adverts', [MobileAppController::class, 'fetchAdverts']);
+Route::get('/get-maqam-experiences', [MobileAppController::class, 'fetchMaqamExperiences']);
