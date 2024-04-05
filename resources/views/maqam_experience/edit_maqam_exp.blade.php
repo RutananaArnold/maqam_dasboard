@@ -27,9 +27,12 @@
 
         {{-- Display advert details --}}
         <div class="advert-details">
-            <div>
-                <iframe width="560" height="315" src="{{ $exp->videoLink }}" frameborder="0" allowfullscreen></iframe>
-            </div>
+            <video controls>
+                <source src="{{ $exp->videoLink }}" type="video/mp4">
+                <source src="{{ $exp->videoLink }}" type="video/webm">
+                <source src="{{ $exp->videoLink }}" type="video/ogg">
+                Your browser does not support the video tag.
+            </video>
 
             <img src="{{ asset('maqamExpImages/' . $exp->thumbnail) }}" alt="Advert Image"
                 style="max-width: 50%; height: 50%;">

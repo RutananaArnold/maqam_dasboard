@@ -26,6 +26,7 @@ class BookingsController extends Controller
                 'users.nationality',
                 'users.residence',
                 'packages.category',
+                'bookings.created_at',
             )
             ->orderBy('bookings.created_at', 'desc')
             ->get();
