@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="thumbnail">Change Maqam Experience Thumbnail:</label>
+                    <label for="thumbnail">Change Maqam Experience Thumbnail (The image should be less than 1MB):</label>
                     <input type="file" id="thumbnail" name="thumbnail" class="form-control">
                 </div>
 

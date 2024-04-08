@@ -75,7 +75,7 @@
             </div>
 
             <div class="form-group">
-                <label for="packageImage">Package Image / Thumbnail:</label>
+                <label for="packageImage">Package Image / Thumbnail (The image should be less than 1MB):</label>
                 <input type="file" id="packageImage" name="packageImage" class="form-control" required>
             </div>
 

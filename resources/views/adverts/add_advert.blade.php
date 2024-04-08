@@ -39,7 +39,7 @@
             </div>
 
             <div class="form-group">
-                <label for="image">Advert Image:</label>
+                <label for="image">Advert Image (The image should be less than 1MB):</label>
                 <input type="file" id="image" name="image" class="form-control" required>
             </div>
 

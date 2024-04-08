@@ -1,18 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.sidebar')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration</title>
-    <!-- Add the favicon link -->
-    <link rel="icon" href="{{ asset('images/maqamLogo.jpeg') }}" type="image/x-icon">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
+@section('content')
+    <div class="pagetitle">
+        <h1>Register New system user</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+                <li class="breadcrumb-item active">Register New system user</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
 
-<body>
-
-    <div class="container mt-5">
+    <div class="form-container">
 
         @if (session('success'))
             <div class="alert alert-success">
@@ -48,8 +47,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="password-confirm">Confirm Password</label>
-                                <input type="password" class="form-control" id="password-confirm"
-                                    name="password-confirm" required>
+                                <input type="password" class="form-control" id="password-confirm" name="password-confirm"
+                                    required>
                             </div>
                             {{-- choose role --}}
                             <div class="form-group">
@@ -61,14 +60,11 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-primary">Register</button>
+                            <button style="margin-top: 50px" type="submit" class="btn btn-primary">Register</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-</body>
-
-</html>
+@endsection

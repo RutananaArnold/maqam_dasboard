@@ -22,8 +22,8 @@ use App\Http\Controllers\Packages\PackageController;
 //     return view('welcome');
 // });
 
-Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [AuthController::class, 'registration'])->name('registeruser');
+Route::get('/register', [AuthController::class, 'showRegistrationForm'])->middleware(['auth'])->name('register');
+Route::post('/register', [AuthController::class, 'registration'])->middleware(['auth'])->name('registeruser');
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('loginuser');

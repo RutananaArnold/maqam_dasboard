@@ -48,7 +48,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="image">Change Advert Image:</label>
+                    <label for="image">Change Advert Image (The image should be less than 1MB):</label>
                     <input type="file" id="image" name="image" class="form-control">
                 </div>
 
