@@ -197,7 +197,7 @@ class MobileAppController extends Controller
             ->join('users', 'users.id', '=', 'bookings.userId')
             ->join('user_roles', 'user_roles.id', '=', 'users.role')
             ->join('packages', 'packages.id', '=', 'bookings.packageId')
-            ->join('booking_payments', 'booking_payments.bookingId', '=', 'bookings.id')
+            // ->join('booking_payments', 'booking_payments.bookingId', '=', 'bookings.id')
             ->select(
                 'users.id as userId',
                 'bookings.id as bookingId',
