@@ -104,4 +104,21 @@ class AuthController extends Controller
 
         return redirect('/'); // Redirect to the home page after logout
     }
+
+    public function deleteUserInformation(Request $request)
+    {
+        $phone = $request->phone;
+
+        // Find the user with the given phone number
+        $user = User::where('phone', $phone)->first();
+
+        if ($user) {
+            // User found, delete the user
+            $user->delete();
+            return redirect()->back()->with('success', 'User information deleted successfully');
+        } else {
+            // User not found
+            return redirect()->back()->with('error', 'User not found');
+        }
+    }
 }

@@ -22,12 +22,19 @@ use App\Http\Controllers\Packages\PackageController;
 //     return view('welcome');
 // });
 
+// AUTH
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->middleware(['auth'])->name('register');
 Route::post('/register', [AuthController::class, 'registration'])->middleware(['auth'])->name('registeruser');
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('loginuser');
+// delete user information
+Route::get('/delete-user-information', function () {
+    return view('auth.delete_user');
+});
+Route::post('/delete', [AuthController::class, 'deleteUserInformation'])->name('deleteUser');
 
+// logged in user views
 Route::get('/dashboard', [AuthController::class, 'showDashboard'])->middleware(['auth'])->name('dashboard');
 Route::get('/profile', [AuthController::class, 'showProfile'])->middleware(['auth'])->name('profile-page');
 
