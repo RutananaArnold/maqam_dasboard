@@ -33,6 +33,10 @@ Route::get('/delete-user-information', function () {
     return view('auth.delete_user');
 });
 Route::post('/delete', [AuthController::class, 'deleteUserInformation'])->name('deleteUser');
+// privacy policy
+Route::get('/privacy-policy', function () {
+return view('privacy_policy');
+});
 
 // logged in user views
 Route::get('/dashboard', [AuthController::class, 'showDashboard'])->middleware(['auth'])->name('dashboard');
