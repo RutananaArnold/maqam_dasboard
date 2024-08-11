@@ -214,7 +214,7 @@ class MobileAppController extends Controller
                 'packages.category',
                 'bookings.created_at',
             )
-            ->where('bookings.userId', $request['userId'])
+            ->where('bookings.userId', '=', $request['userId'])
             ->orderBy('bookings.created_at', 'desc');
 
         $paginator = $bookings->paginate($perPage, ['*'], 'page', $page);
@@ -248,6 +248,7 @@ class MobileAppController extends Controller
             "paymentOption" => 'required|string',
             'amount' => 'required|string'
         ]);
+
         $bookingId = $request['bookingId'];
         $paymentOption = $request['paymentOption'];
         $bookingAmount = $request['amount'];
@@ -257,27 +258,39 @@ class MobileAppController extends Controller
         $payments->amount = $bookingAmount;
 
         try {
-            $payments->save();
+            DB::beginTransaction();  // Start transaction
+
+            if ($payments->save()) {
+
+                $affectedBooking = Booking::where("id", $bookingId)
+                    ->update(["paymentOption" => $paymentOption]);
+
+                if ($affectedBooking) {
+                    DB::commit();  // Commit transaction if everything succeeds
+                    return response()->json([
+                        'status' => true,
+                        'message' => "Payment Details updated"
+                    ], 200);
+                } else {
+                    DB::rollBack(); // Rollback if booking update fails
+                    return response()->json([
+                        'status' => false,
+                        'message' => "Payment Details failed to get updated"
+                    ], 400);
+                }
+            } else {
+                DB::rollBack();  // Rollback if payment save fails
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Failed to save payment details'
+                ], 400);
+            }
         } catch (\Exception $e) {
+            DB::rollBack();  // Rollback on exception
             return response()->json([
                 'status' => false,
                 'message' => "Failed to save payment: " . $e->getMessage()
             ], 500);
-        }
-
-
-        $affectedBooking = Booking::where("id", $bookingId)->update(["paymentOption" => $paymentOption]);
-
-        if ($affectedBooking) {
-            return response()->json([
-                'status' => true,
-                'message' => "Payment Details updated"
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => "Payment Details failed to get updated"
-            ], 400);
         }
     }
 
@@ -325,10 +338,11 @@ class MobileAppController extends Controller
             ->join('bookings', 'bookings.id', '=', 'booking_payments.bookingId')
             ->select(
                 'booking_payments.amount',
+                'booking_payments.payment_status',
                 'bookings.paymentOption',
                 'booking_payments.created_at'
             )
-            ->where('booking_payments.bookingId', $bookId)
+            ->where('booking_payments.bookingId', '=', $bookId)
             ->orderBy('booking_payments.created_at', 'desc')
             ->get();
 

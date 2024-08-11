@@ -55,7 +55,7 @@
                             <div class="d-flex justify-content-center py-4">
                                 <a href="index.html" class="logo d-flex align-items-center w-auto">
                                     <img src="{{ asset('images/maqamLogo.jpeg') }}" alt="">
-                                    <span class="d-none d-lg-block">Delete User Information</span>
+                                    <span class="d-none d-lg-block">Maqam App | Delete User Information</span>
                                 </a>
                             </div><!-- End Logo -->
 

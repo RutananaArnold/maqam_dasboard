@@ -52,18 +52,21 @@ class BookingsController extends Controller
                 'bookings.id as bookingId',
                 'bookings.travelDocument'
             )
-            ->where('bookings.id', $bookId)
+            ->where('bookings.id', '=', $bookId)
             ->orderBy('bookings.created_at', 'desc')
             ->get();
 
         $payments = DB::table('booking_payments')
             ->join('bookings', 'bookings.id', '=', 'booking_payments.bookingId')
             ->select(
+                'booking_payments.id',
+                'booking_payments.bookingId',
                 'booking_payments.amount',
+                'booking_payments.payment_status',
                 'bookings.paymentOption',
                 'booking_payments.created_at'
             )
-            ->where('booking_payments.bookingId', $bookId)
+            ->where('booking_payments.bookingId', '=', $bookId)
             ->orderBy('booking_payments.created_at', 'desc')
             ->get();
 
@@ -121,6 +124,26 @@ class BookingsController extends Controller
             return redirect()->back()->with('success', 'Travel document attached successfully.');
         } else {
             return redirect()->back()->with('error', 'Travel document failed to be attached.');
+        }
+    }
+
+    public function updatePaymentStatus(Request $request)
+    {
+        $paymentId = $request->paymentId;
+        $bookingId = $request->bookingId;
+        $payment_status = $request->payment_status;
+
+        $updated = DB::table('booking_payments')
+            ->where('booking_payments.id', '=', $paymentId)
+            ->where('booking_payments.bookingId', '=', $bookingId)
+            ->update([
+                "payment_status" => $payment_status,
+            ]);
+
+        if ($updated) {
+            return redirect()->back()->with('success', 'Booking payment status updated successfully.');
+        } else {
+            return redirect()->back()->with('error', 'Booking payment status not updated.');
         }
     }
 }

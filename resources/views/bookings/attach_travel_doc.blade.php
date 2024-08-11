@@ -67,6 +67,8 @@
                         <th>Amount</th>
                         <th>Mode</th>
                         <th>When</th>
+                        <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -75,6 +77,15 @@
                             <td>{{ $payment->amount }}</td>
                             <td>{{ $payment->paymentOption }}</td>
                             <td>{{ $payment->created_at }}</td>
+                            <td>{{ $payment->payment_status }}</td>
+                            <td>
+                                <a href="#" class="btn btn-outline-warning btn-sm"
+                                    data-booking_payment-id="{{ $payment->id }}"
+                                    data-bookingId="{{ $payment->bookingId }}" data-bs-toggle="modal"
+                                    data-bs-target="#updatePaymentStatusModal" style="width: 10em;">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                    Update Status </a>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -107,6 +118,41 @@
             <div id="pdf_preview" style="margin-top: 5%"></div>
         </div>
 
+
+        {{-- update payment status modal --}}
+        <!-- Update Payment Status Modal -->
+        <div class="modal fade" id="updatePaymentStatusModal" tabindex="-1" aria-labelledby="updatePaymentStatusModalLabel"
+            aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updatePaymentStatusModalLabel">Update Payment Status</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('update.Payment.Status') }}" method="POST">
+                        @csrf
+                        <div class="modal-body">
+                            <input type="hidden" name="paymentId" id="paymentId">
+                            <input type="hidden" name="bookingId" id="bookingId">
+                            <div class="mb-3">
+                                <label for="payment_status" class="form-label">Payment Status</label>
+                                <select name="payment_status" id="payment_status" class="form-select" required>
+                                    <option value="">Select Status</option>
+                                    <option value="Not_received">Not Received</option>
+                                    <option value="Received">Received</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Update Status</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- end of payment status modal --}}
     </section>
 
     <script>
@@ -122,6 +168,22 @@
             };
 
             reader.readAsDataURL(file);
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const updateButtons = document.querySelectorAll('a[data-bs-target="#updatePaymentStatusModal"]');
+
+            updateButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const paymentId = this.getAttribute('data-booking_payment-id');
+                    const bookingId = this.getAttribute('data-bookingId');
+
+                    document.getElementById('paymentId').value = paymentId;
+                    document.getElementById('bookingId').value = bookingId;
+                });
+            });
         });
     </script>
 @endsection

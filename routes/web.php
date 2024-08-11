@@ -72,6 +72,7 @@ Route::get('/bookings-list', [BookingsController::class, 'showAllBookings'])->mi
 Route::get('/client-booking/{bookingId}', [BookingsController::class, 'viewBooking'])->middleware(['auth'])->name('showUserbooking');
 Route::get('/download-passport/{userId}', [BookingsController::class, 'downloadPassport'])->middleware(['auth'])->name('savePassport');
 Route::post('/upload-client-document', [BookingsController::class, 'attachTravelDocument'])->middleware(['auth'])->name('uploadTravelDocument');
+Route::post('/update-client-booking-payment-status', [BookingsController::class, 'updatePaymentStatus'])->middleware(['auth'])->name('update.Payment.Status');
 
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

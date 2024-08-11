@@ -10,6 +10,9 @@
     <meta content="" name="description">
     <meta content="" name="keywords">
 
+    <!-- CSRF Token -->
+    <meta name="_token" content="{{ csrf_token() }}">
+
     <!-- Add the favicon link -->
     <link rel="icon" href="{{ asset('images/maqamLogo.jpeg') }}" type="image/x-icon">
 

@@ -15,5 +15,6 @@ class BookingPayment extends Model
         'id',
         'bookingId',
         'amount',
+        'payment_status',
     ];
 }
