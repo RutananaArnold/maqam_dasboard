@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delete User Information</title>
     <!-- Add the favicon link -->
-    <link rel="icon" href="{{ asset('images/maqamLogo.jpeg') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('images/maqamLogo.jpg') }}" type="image/x-icon">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
@@ -54,7 +54,7 @@
 
                             <div class="d-flex justify-content-center py-4">
                                 <a href="index.html" class="logo d-flex align-items-center w-auto">
-                                    <img src="{{ asset('images/maqamLogo.jpeg') }}" alt="">
+                                    <img src="{{ asset('images/maqamLogo.jpg') }}" alt="">
                                     <span class="d-none d-lg-block">Maqam App | Delete User Information</span>
                                 </a>
                             </div><!-- End Logo -->

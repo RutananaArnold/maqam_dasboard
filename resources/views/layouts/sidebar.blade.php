@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Dashboard - Maturity</title>
+    <title>Maqam - Admin</title>
     <meta name="robots" content="noindex, nofollow">
     <meta content="" name="description">
     <meta content="" name="keywords">
@@ -14,7 +14,7 @@
     <meta name="_token" content="{{ csrf_token() }}">
 
     <!-- Add the favicon link -->
-    <link rel="icon" href="{{ asset('images/maqamLogo.jpeg') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('images/maqamLogo.jpg') }}" type="image/x-icon">
 
 
     <!-- Google Fonts -->
@@ -23,7 +23,8 @@
         href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
         rel="stylesheet">
 
-
+    {{-- Icons --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!-- Vendor CSS Files -->
     <link type="text/css" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }} " rel="stylesheet">
@@ -46,8 +47,8 @@
 
         <div class="d-flex align-items-center justify-content-between">
             <a href="{{ route('dashboard') }}" class="logo d-flex align-items-center">
-                <img src="assets/img/logo.png" alt="">
-                <span class="d-none d-lg-block">MAQAM Admin</span>
+                <img src="{{ asset('images/maqamLogo.jpg') }}" alt="logo">
+                <span class="d-none d-lg-block">MAQAM ADMIN</span>
             </a>
             <i class="bi bi-list toggle-sidebar-btn"></i>
         </div><!-- End Logo -->
@@ -71,27 +72,27 @@
 
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-menu-button-wide"></i><span>Bookings</span><i
-                        class="bi bi-chevron-down ms-auto"></i>
+                    <i class="bi bi-bookmark"></i><span>Bookings</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
                         <a href="{{ route('bookingsNow') }}">
-                            <i class="bi bi-circle"></i><span>View Bookings</span>
+                            <i class="bi bi-circle"></i><span>App Bookings</span>
                         </a>
                     </li>
                 </ul>
-                {{-- <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="#">
-                            <i class="bi bi-circle"></i><span>Booking Categories</span>
+                        <a href="{{ route('bookings.regular') }}">
+                            <i class="bi bi-circle"></i><span>Regular Bookings</span>
                         </a>
                     </li>
-                </ul> --}}
+                </ul>
             </li>
+
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#advert-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-journal-text"></i><span>Adverts</span><i class="bi bi-chevron-down ms-auto"></i>
+                    <i class="bi bi-megaphone"></i><span>Adverts</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="advert-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
@@ -109,7 +110,7 @@
 
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#packages-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-journal-text"></i><span>Packages</span><i class="bi bi-chevron-down ms-auto"></i>
+                    <i class="bi bi-box-seam"></i><span>Packages</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="packages-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
@@ -129,7 +130,7 @@
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#experience-nav" data-bs-toggle="collapse"
                     href="#">
-                    <i class="bi bi-journal-text"></i><span>Maqam Experience</span><i
+                    <i class="bi bi-camera"></i><span>Maqam Experience</span><i
                         class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="experience-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
@@ -149,22 +150,15 @@
 
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#Sonda-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-journal-text"></i><span>Sonda Mpola</span><i
-                        class="bi bi-chevron-down ms-auto"></i>
+                    <i class="bi bi-wallet"></i><span>Sonda Mpola</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-                {{-- <ul id="Sonda-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <ul id="Sonda-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
                         <a href="#">
-                            <i class="bi bi-circle"></i><span>View Maqam Experiences</span>
+                            <i class="bi bi-circle"></i><span>Sonda Mpola Collections</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="#">
-                            <i class="bi bi-circle"></i><span>Add Maqam Experience</span>
-                        </a>
-                    </li>
-
-                </ul> --}}
+                </ul>
             </li>
 
 
@@ -177,7 +171,7 @@
 
                     <li class="nav-item">
                         <a class="nav-link collapsed" href="{{ route('register') }}">
-                            <i class="bi bi-file-earmark"></i>
+                            <i class="bi bi-person"></i>
                             <span>Register System User</span>
                         </a>
                     </li>

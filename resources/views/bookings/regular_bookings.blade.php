@@ -1,14 +1,22 @@
 @extends('layouts.sidebar')
 
 @section('content')
-    <div class="pagetitle">
-        <h1>View Bookings</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active">View Bookings List</li>
-            </ol>
-        </nav>
+    <div class="pagetitle d-flex justify-content-between align-items-center">
+        <div>
+            <h1>View Regular Bookings</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">View Regular Bookings</li>
+                </ol>
+            </nav>
+        </div>
+        <div>
+            <!-- Add Booking button -->
+            <a href="{{ route('add.bookings.regular') }}" class="btn btn-primary">
+                Add Booking
+            </a>
+        </div>
     </div><!-- End Page Title -->
 
     @if (session('success'))
@@ -25,14 +33,14 @@
 
     <section class="section dashboard">
         <div class="row">
-            <h1>Bookings List</h1>
+            <h1>Regular Bookings</h1>
             <table class="table datatable">
                 <thead>
                     <tr>
-                        <th>name</th>
-                        <th>gender</th>
-                        <th>nationality</th>
-                        <th>residence</th>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Nationality</th>
+                        <th>Residence</th>
                         <th>Category</th>
                         <th>CreatedAt</th>
                         <th>Actions</th>
@@ -50,7 +58,7 @@
                             <td>{{ $booking->created_at }}</td>
                             <td>
                                 <a href="{{ route('showUserbooking', ['bookingId' => $booking->bookId]) }}"
-                                    class="btn btn-outline-warning btn-sm" style="width: 6em;"><i class="fa fa-pencil"
+                                    class="btn btn-outline-warning btn-sm" style="width: 8em;"><i class="fa fa-edit"
                                         aria-hidden="true"></i> UPDATE</a>
                             </td>
                         </tr>

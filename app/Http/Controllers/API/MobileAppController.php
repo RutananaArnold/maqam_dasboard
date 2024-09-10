@@ -54,6 +54,7 @@ class MobileAppController extends Controller
             $newBooking = new Booking();
             $newBooking->userId = $existingUserId;
             $newBooking->packageId = $packageId;
+            $newBooking->bookingType = 'App';
             if ($newBooking->save()) {
                 return response()->json([
                     'message' => 'Booking saved successfully',
@@ -67,7 +68,7 @@ class MobileAppController extends Controller
             }
         } else {
             // if userId is empty, create an account for the user with their number as their password
-            $currentDateTime = now();
+            $currentDateTime = now()->setTimezone('Africa/Nairobi');
 
             // Decode base64 image string
             $decoded_file = base64_decode($passportPhoto); // decode the file
@@ -76,7 +77,7 @@ class MobileAppController extends Controller
             $file = uniqid() . '.' . $extension; // rename file as a unique name
 
             try {
-                Storage::disk('booking_uploads')->put($file, $decoded_file);
+                Storage::disk('bookingImages')->put($file, $decoded_file);
             } catch (Exception $e) {
                 //throw $th;
                 echo json_encode($e->getMessage());
@@ -115,6 +116,7 @@ class MobileAppController extends Controller
             $newBooking = new Booking();
             $newBooking->userId = $newUserId;
             $newBooking->packageId = $packageId;
+            $newBooking->bookingType = 'App';
             if ($newBooking->save()) {
                 return response()->json([
                     'message' => 'Booking saved successfully',

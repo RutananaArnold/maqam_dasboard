@@ -2,11 +2,11 @@
 
 @section('content')
     <div class="pagetitle">
-        <h1>User Booking</h1>
+        <h1>Client Booking</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active">User Booking Detail</li>
+                <li class="breadcrumb-item active">Client Booking Detail</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
@@ -25,8 +25,18 @@
 
     <section class="section dashboard">
         <div class="row">
-            <h1>Client Information</h1>
-            <table class="table datatable">
+            <div class="pagetitle d-flex justify-content-between align-items-center">
+                <div>
+                    <h1>Client Information</h1>
+                </div>
+                <div>
+                    <!-- Edit client information button -->
+                    <a href="" class="btn btn-primary">
+                        Edit Client Information
+                    </a>
+                </div>
+            </div>
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -49,10 +59,10 @@
                             <td>{{ $booking->nationality }}</td>
                             <td>{{ $booking->residence }}</td>
                             <td>{{ $booking->NIN_or_Passport }}</td>
-                            <td><img src="{{ asset('bookingImages/' . $booking->passportPhoto) }}" alt="Advert Image"
+                            <td><img src="{{ asset('bookingImages/' . $booking->passportPhoto) }}" alt="passport"
                                     style="max-height: 50px; max-width: 80px"></td>
                             <td> <a href="{{ route('savePassport', ['userId' => $booking->idOfUser]) }}"
-                                    class="btn btn-outline-warning btn-sm" style="width: 6em;"><i class="fa fa-pencil"
+                                    class="btn btn-outline-warning btn-sm" style="width: 6em;"><i class="fa fa-download"
                                         aria-hidden="true"></i> Download Passport</a></td>
 
                         </tr>
@@ -60,7 +70,20 @@
                 </tbody>
             </table>
 
-            <h1>Payment History</h1>
+            <div style="margin-top: 50px"></div>
+
+            <div class="pagetitle d-flex justify-content-between align-items-center">
+                <div>
+                    <h1>Payment History</h1>
+                </div>
+                <div>
+                    <!-- Add Payment button -->
+                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateBookingPayment">
+                        Add Payment
+                    </a>
+                </div>
+            </div>
+
             <table class="table datatable">
                 <thead>
                     <tr>
@@ -119,7 +142,6 @@
         </div>
 
 
-        {{-- update payment status modal --}}
         <!-- Update Payment Status Modal -->
         <div class="modal fade" id="updatePaymentStatusModal" tabindex="-1" aria-labelledby="updatePaymentStatusModalLabel"
             aria-hidden="true" data-bs-backdrop="static">
@@ -151,8 +173,48 @@
                 </div>
             </div>
         </div>
-
         {{-- end of payment status modal --}}
+
+
+        <!-- Update Booking Payment Modal -->
+        <div class="modal fade" id="updateBookingPayment" tabindex="-1" aria-labelledby="updateBookingPaymentLabel"
+            aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateBookingPaymentLabel">Record Booking Payment</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('create.bookings.payment') }}" method="POST">
+                        @csrf
+                        <div class="modal-body">
+                            <input type="text" name="bookingId" value="{{ $bookingId }}" hidden>
+
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">Amount</label>
+                                <input type="text" name="amount" id="amount" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="paymentOption" class="form-label">Payment Option</label>
+                                <select name="paymentOption" id="paymentOption" class="form-select" required>
+                                    <option value="">Select Option</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="mtn">MTN Merchant</option>
+                                    <option value="airtel">AIRTEL Merchant</option>
+                                    <option value="Bank">Bank</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Create Payment Record</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {{-- end of booking payment modal --}}
     </section>
 
     <script>

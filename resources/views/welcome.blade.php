@@ -9,7 +9,7 @@
     <title>MAQAM - Dashboard</title>
 
     <!-- Add the favicon link -->
-    <link rel="icon" href="{{ asset('images/maqamLogo.jpeg') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('images/maqamLogo.jpg') }}" type="image/x-icon">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -420,7 +420,7 @@
 
             <!-- Centered image -->
             <div class="flex justify-center mt-16">
-                <img src="{{ asset('images/maqamLogo.jpeg') }}" alt="Your Image" class="centered-image">
+                <img src="{{ asset('images/maqamLogo.jpg') }}" alt="Your Image" class="centered-image">
             </div>
 
 
@@ -429,7 +429,7 @@
                     <div class="flex items-center gap-4">
                         <a href="#"
                             class="group inline-flex items-center hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
-                            <img src="{{ asset('images/maqamLogo.jpeg') }}" alt="Image Alt Text"
+                            <img src="{{ asset('images/maqamLogo.jpg') }}" alt="Image Alt Text"
                                 class="w-5 h-5 stroke-gray-400 dark:stroke-gray-600 group-hover:stroke-gray-600 dark:group-hover:stroke-gray-400">
                             MAQAM
                         </a>

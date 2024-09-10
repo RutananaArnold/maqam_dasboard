@@ -4,15 +4,18 @@ namespace App\Http\Controllers\Bookings;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\BookingPayment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\File;
+use Exception;
+use Illuminate\Support\Facades\Hash;
 
 class BookingsController extends Controller
 {
-    public function showAllBookings()
+    public function showAppBookings()
     {
         $bookings = DB::table('bookings')
             ->join('users', 'users.id', '=', 'bookings.userId')
@@ -28,9 +31,10 @@ class BookingsController extends Controller
                 'packages.category',
                 'bookings.created_at',
             )
+            ->where('bookings.bookingType', '=', 'App')
             ->orderBy('bookings.created_at', 'desc')
             ->get();
-        return view('bookings.view_all_bookings', ['bookings' => $bookings]);
+        return view('bookings.view_app_bookings', ['bookings' => $bookings]);
     }
 
     public function viewBooking(Request $request)
@@ -144,6 +148,137 @@ class BookingsController extends Controller
             return redirect()->back()->with('success', 'Booking payment status updated successfully.');
         } else {
             return redirect()->back()->with('error', 'Booking payment status not updated.');
+        }
+    }
+
+    public function updateClientBookingPayment(Request $request)
+    {
+        $request->validate([
+            'bookingId' => 'required',
+            "paymentOption" => 'required|string',
+            'amount' => 'required|string'
+        ]);
+
+        $bookingId = $request['bookingId'];
+        $paymentOption = $request['paymentOption'];
+        $bookingAmount = $request['amount'];
+
+        $payments = new BookingPayment();
+        $payments->bookingId = $bookingId;
+        $payments->amount = $bookingAmount;
+
+        try {
+
+            if ($payments->save()) {
+
+                $affectedBooking = Booking::where("id", $bookingId)
+                    ->update(["paymentOption" => $paymentOption]);
+
+                if ($affectedBooking) {
+                    return redirect()->back()->with('success', 'Payment Details updated successfully.');
+                } else {
+                    return redirect()->back()->with('error', 'Payment Details failed to get updated.');
+                }
+            } else {
+                return redirect()->back()->with('error', 'Failed to save payment details.');
+            }
+        } catch (\Exception $e) {
+            // Log the error and show a message
+            echo json_encode($e->getMessage());
+            return redirect()->back()->with('error', 'Error while saving payment.');
+        }
+    }
+
+
+    // Regular Booking
+    public function viewRegularBookings()
+    {
+        $bookings = DB::table('bookings')
+            ->join('users', 'users.id', '=', 'bookings.userId')
+            ->join('packages', 'packages.id', '=', 'bookings.packageId')
+            ->select(
+                'users.id  as userId',
+                'bookings.id as bookId',
+                'users.name',
+                'users.phone',
+                'users.gender',
+                'users.nationality',
+                'users.residence',
+                'packages.category',
+                'bookings.created_at',
+            )
+            ->where('bookings.bookingType', '=', 'Regular')
+            ->orderBy('bookings.created_at', 'desc')
+            ->get();
+        return view('bookings.regular_bookings', ['bookings' => $bookings]);
+    }
+
+    public function addRegularBookingView()
+    {
+        $packages = DB::table('packages')
+            ->select(
+                'packages.id',
+                'packages.category',
+                'packages.title',
+            )
+            ->get();
+
+        return view('bookings.add_regular_booking', ['packages' => $packages]);
+    }
+
+    public function createRegularBooking(Request $request)
+    {
+        $name = $request->name;
+        $phone = $request->phone;
+        $gender = $request->gender;
+        $dob = $request->dob;
+        $email = $request->email;
+        $nationality = $request->nationality;
+        $residence = $request->residence;
+        $packageId = $request->packageId;
+        $ninOrPassport = $request->nin_or_passport;
+
+        $currentDateTime = now()->setTimezone('Africa/Nairobi');
+
+        // Handle the uploaded image
+        $passportPhoto = $request->file('image');  // Get the uploaded file
+
+        if ($passportPhoto) {
+            // Store the image in the 'public/bookingImages' folder
+            $file = uniqid() . '.' . $passportPhoto->getClientOriginalExtension();  // Generate unique filename with original extension
+            $passportPhoto->move(public_path('bookingImages'), $file); // Save the file to the specified folder
+        }
+
+        try {
+            $id = DB::table('users')->insertGetId([
+                'name' => $name,
+                'email' => $email ?? "example@gmail.com",
+                'phone' => $phone,
+                'password' => Hash::make($phone),
+                'role' => 3,
+                'gender' => $gender,
+                'dob' => $dob ?? '00/00/0000',
+                'nationality' => $nationality,
+                'residence' => $residence,
+                'NIN_or_Passport' => $ninOrPassport,
+                'passportPhoto' => $file ?? null,  // Store the file name if the file was uploaded
+                'created_at' => $currentDateTime,
+                'updated_at' => $currentDateTime
+            ]);
+
+            $newBooking = new Booking();
+            $newBooking->userId = $id;
+            $newBooking->packageId = $packageId;
+            $newBooking->bookingType = 'Regular';
+            if ($newBooking->save()) {
+                return redirect('/regular-bookings')->with('success', 'Regular Booking saved Successfully.');
+            } else {
+                return redirect()->back()->with('error', 'Regular Booking not saved.');
+            }
+        } catch (Exception $e) {
+            // Log the error and show a message
+            echo json_encode($e->getMessage());
+            return redirect()->back()->with('error', 'Error while saving the booking.');
         }
     }
 }

@@ -19,6 +19,7 @@ class CreateBookingsTable extends Migration
             $table->foreignId('packageId')->unsigned()->references('id')->on('packages');
             $table->string('paymentOption')->nullable();
             $table->string('travelDocument')->nullable();
+            $table->string('bookingType')->nullable();
             $table->timestamps();
         });
     }

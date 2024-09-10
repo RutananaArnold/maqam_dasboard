@@ -35,7 +35,7 @@ Route::get('/delete-user-information', function () {
 Route::post('/delete', [AuthController::class, 'deleteUserInformation'])->name('deleteUser');
 // privacy policy
 Route::get('/privacy-policy', function () {
-return view('privacy_policy');
+    return view('privacy_policy');
 });
 
 // logged in user views
@@ -71,12 +71,18 @@ Route::post('/edit-maqam-experience', [MaqamExperienceController::class, 'update
 Route::get('/delete/{expId}/experience', [MaqamExperienceController::class, 'showDeletePage'])->middleware(['auth'])->name('toDeleteExp');
 Route::post('/delete-experience', [MaqamExperienceController::class, 'deleteMaqamExperience'])->middleware(['auth'])->name('deleteMaqamExp');
 
-// bookings
-Route::get('/bookings-list', [BookingsController::class, 'showAllBookings'])->middleware(['auth'])->name('bookingsNow');
+//app bookings
+Route::get('/bookings-list', [BookingsController::class, 'showAppBookings'])->middleware(['auth'])->name('bookingsNow');
 Route::get('/client-booking/{bookingId}', [BookingsController::class, 'viewBooking'])->middleware(['auth'])->name('showUserbooking');
 Route::get('/download-passport/{userId}', [BookingsController::class, 'downloadPassport'])->middleware(['auth'])->name('savePassport');
 Route::post('/upload-client-document', [BookingsController::class, 'attachTravelDocument'])->middleware(['auth'])->name('uploadTravelDocument');
 Route::post('/update-client-booking-payment-status', [BookingsController::class, 'updatePaymentStatus'])->middleware(['auth'])->name('update.Payment.Status');
+// update booking payment
+Route::post('/update-client-booking-payment', [BookingsController::class, 'updateClientBookingPayment'])->middleware(['auth'])->name('create.bookings.payment');
 
+// regular bookings
+Route::get('/regular-bookings', [BookingsController::class, 'viewRegularBookings'])->middleware(['auth'])->name('bookings.regular');
+Route::get('/redirect-to-add-regular-booking', [BookingsController::class, 'addRegularBookingView'])->middleware(['auth'])->name('add.bookings.regular');
+Route::post('/save-regular-booking', [BookingsController::class, 'createRegularBooking'])->middleware(['auth'])->name('save.booking.regular');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
