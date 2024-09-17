@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthLogic\AuthController;
 use App\Http\Controllers\Bookings\BookingsController;
 use App\Http\Controllers\MaqamExp\MaqamExperienceController;
 use App\Http\Controllers\Packages\PackageController;
+use App\Http\Controllers\SondaMpola\SondaMpolaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -84,5 +85,17 @@ Route::post('/update-client-booking-payment', [BookingsController::class, 'updat
 Route::get('/regular-bookings', [BookingsController::class, 'viewRegularBookings'])->middleware(['auth'])->name('bookings.regular');
 Route::get('/redirect-to-add-regular-booking', [BookingsController::class, 'addRegularBookingView'])->middleware(['auth'])->name('add.bookings.regular');
 Route::post('/save-regular-booking', [BookingsController::class, 'createRegularBooking'])->middleware(['auth'])->name('save.booking.regular');
+
+// Sonda mpola
+Route::get('/sonda-mpola-collections', [SondaMpolaController::class, 'view'])->middleware(['auth'])->name('sondaMpola.collections');
+Route::get('/redirect-to-create-sonda-mpola-record', function () {
+    return view('sonda_mpola.create_sonda_mpola_record');
+})->middleware(['auth'])->name('redirect.sondaMpola.create');
+Route::post('/save-sonda-mpola-record', [SondaMpolaController::class, 'saveSondaMpolaRecord'])->middleware(['auth'])->name('sondaMpola.save');
+Route::get('/view-sonda-mpola-record', [SondaMpolaController::class, 'viewSondaMpolaRecord'])->middleware(['auth'])->name('sondaMpola.view.record');
+Route::post('/store-sonda-mpola-payment-record', [SondaMpolaController::class, 'createSondaMpolaPaymentRecord'])->middleware(['auth'])->name('sondaMpola.payment.save');
+Route::post('/update-sonda-mpola-payment-status', [SondaMpolaController::class, 'updatePaymentStatusAndTargetAmountStatus'])->middleware(['auth'])->name('sondaMpola.payment.status.update');
+Route::get('/generate-sonda-mpola-receipt', [SondaMpolaController::class, 'generateSondaMpolaReceipt'])->middleware(['auth'])->name('sondaMpola.receipt.download');
+
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

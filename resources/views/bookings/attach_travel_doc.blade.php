@@ -157,7 +157,8 @@
                             <input type="hidden" name="paymentId" id="paymentId">
                             <input type="hidden" name="bookingId" id="bookingId">
                             <div class="mb-3">
-                                <label for="payment_status" class="form-label">Payment Status</label>
+                                <label for="payment_status" class="form-label">Payment Status (Was Payment Received
+                                    ?)</label>
                                 <select name="payment_status" id="payment_status" class="form-select" required>
                                     <option value="">Select Status</option>
                                     <option value="Not_received">Not Received</option>

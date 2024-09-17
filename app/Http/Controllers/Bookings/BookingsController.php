@@ -107,7 +107,7 @@ class BookingsController extends Controller
         }
 
         // Get the current travel document file name
-        $currentDocument = Booking::where('id', $bookingId)->value('travelDocument');
+        $currentDocument = Booking::where('id', '=', $bookingId)->value('travelDocument');
 
         // Delete the current travel document file if it exists
         if ($currentDocument) {
@@ -122,7 +122,7 @@ class BookingsController extends Controller
         $filePath = public_path() . '/travelDocuments/';
         $pdf_file->move($filePath, $uniqueFileName);
 
-        $document = Booking::where('id', $bookingId)->update(['travelDocument' => $uniqueFileName]);
+        $document = Booking::where('id', '=', $bookingId)->update(['travelDocument' => $uniqueFileName]);
 
         if ($document) {
             return redirect()->back()->with('success', 'Travel document attached successfully.');
@@ -171,7 +171,7 @@ class BookingsController extends Controller
 
             if ($payments->save()) {
 
-                $affectedBooking = Booking::where("id", $bookingId)
+                $affectedBooking = Booking::where("id", '=', $bookingId)
                     ->update(["paymentOption" => $paymentOption]);
 
                 if ($affectedBooking) {

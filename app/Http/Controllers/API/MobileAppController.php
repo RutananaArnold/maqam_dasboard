@@ -264,7 +264,7 @@ class MobileAppController extends Controller
 
             if ($payments->save()) {
 
-                $affectedBooking = Booking::where("id", $bookingId)
+                $affectedBooking = Booking::where("id", '=', $bookingId)
                     ->update(["paymentOption" => $paymentOption]);
 
                 if ($affectedBooking) {
@@ -365,7 +365,7 @@ class MobileAppController extends Controller
     {
         $bookId = $request->bookingId;
 
-        $booking = Booking::select('travelDocument')->where('bookings.id', $bookId)->first();
+        $booking = Booking::select('travelDocument')->where('bookings.id', '=', $bookId)->first();
 
         if (!$booking) {
             return response()->json(['error' => 'Document path not found.'], 404);
@@ -446,7 +446,7 @@ class MobileAppController extends Controller
             "password" => 'required|string',
         ]);
 
-        $user = User::where('phone', $request->phone)->first();
+        $user = User::where('phone', '=', $request->phone)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Invalid phone number or password'], 401);

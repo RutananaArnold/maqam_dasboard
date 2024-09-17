@@ -16,6 +16,8 @@
     <!-- Add the favicon link -->
     <link rel="icon" href="{{ asset('images/maqamLogo.jpg') }}" type="image/x-icon">
 
+    {{--  --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Google Fonts -->
     <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -154,7 +156,7 @@
                 </a>
                 <ul id="Sonda-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="#">
+                        <a href="{{ route('sondaMpola.collections') }}">
                             <i class="bi bi-circle"></i><span>Sonda Mpola Collections</span>
                         </a>
                     </li>
@@ -200,6 +202,7 @@
     <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
             class="bi bi-arrow-up-short"></i></a>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Vendor JS Files -->
     <script src="{{ asset('vendor/apexcharts/apexcharts.min.js') }} "></script>

@@ -110,7 +110,7 @@ class AuthController extends Controller
         $phone = $request->phone;
 
         // Find the user with the given phone number
-        $user = User::where('phone', $phone)->first();
+        $user = User::where('phone', '=', $phone)->first();
 
         if ($user) {
             // User found, delete the user

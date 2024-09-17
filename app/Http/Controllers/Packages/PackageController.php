@@ -142,7 +142,7 @@ class PackageController extends Controller
 
         $package = Package::find($id);
 
-        $services = Service::where("packageId",  $package->id)->get();
+        $services = Service::where("packageId", '=',  $package->id)->get();
 
         if (!$package) {
             return redirect()->back()->with('error', 'Package not found');
