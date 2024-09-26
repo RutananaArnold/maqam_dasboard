@@ -2,11 +2,11 @@
 
 @section('content')
     <div class="pagetitle">
-        <h1>Sonda Mpola Record</h1>
+        <h1>Sonda Mpola Account</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active">Sonda Mpola Record Detail</li>
+                <li class="breadcrumb-item active">Sonda Mpola Account Detail</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
@@ -34,12 +34,12 @@
             <!-- Tab Navigation -->
             <ul class="nav nav-tabs" id="sondaMpolaTabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link" id="account-tab" data-bs-toggle="tab" href="#account" role="tab"
-                        aria-controls="account" aria-selected="false">Account</a>
+                    <a class="nav-link active" id="account-tab" data-bs-toggle="tab" href="#account" role="tab"
+                        aria-controls="account" aria-selected="true">Account</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" id="applicant-details-tab" data-bs-toggle="tab" href="#applicant-details"
-                        role="tab" aria-controls="applicant-details" aria-selected="true">Applicant Details</a>
+                    <a class="nav-link" id="applicant-details-tab" data-bs-toggle="tab" href="#applicant-details"
+                        role="tab" aria-controls="applicant-details" aria-selected="false">Applicant Details</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="bio-data-tab" data-bs-toggle="tab" href="#bio-data" role="tab"
@@ -50,7 +50,7 @@
             <!-- Tab Content -->
             <div class="tab-content" id="sondaMpolaTabContent">
                 <!-- Account Tab -->
-                <div class="tab-pane fade" id="account" role="tabpanel" aria-labelledby="account-tab">
+                <div class="tab-pane fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
                     <table class="table table-striped">
                         <tr>
                             <th>Name:</th>
@@ -61,6 +61,10 @@
                             <td>{{ $sondaMpolaRecord->reference }}</td>
                         </tr>
                         <tr>
+                            <th>Account Created By:</th>
+                            <td>{{ $sondaMpolaRecord->account_created_by_name }}</td>
+                        </tr>
+                        <tr>
                             <th>Target:</th>
                             <td>{{ $sondaMpolaRecord->umrahSavingTarget ?? $sondaMpolaRecord->hajjSavingTarget }}</td>
                         </tr>
@@ -68,13 +72,19 @@
                             <th>Target Amount:</th>
                             <td>UGX {{ number_format($sondaMpolaRecord->targetAmount) }}</td>
                         </tr>
-
+                        <tr>
+                            <th>Amount Deposited So Far:</th>
+                            <td>{{ number_format($amountDepositedSoFar) }}</td>
+                        </tr>
+                        <tr>
+                            <th>Pending Balance:</th>
+                            <td>{{ number_format($userPendingBalance) }}</td>
+                        </tr>
                     </table>
                 </div>
 
                 <!-- Applicant Details Tab -->
-                <div class="tab-pane fade show active" id="applicant-details" role="tabpanel"
-                    aria-labelledby="applicant-details-tab">
+                <div class="tab-pane fade" id="applicant-details" role="tabpanel" aria-labelledby="applicant-details-tab">
                     <table class="table table-striped">
                         <tr>
                             <th>Identification Type:</th>
@@ -211,10 +221,9 @@
                     <tr>
                         <th>Paid (UGX)</th>
                         <th>Mode</th>
-                        <th>Created at</th>
+                        <th>Created</th>
                         <th>Target</th>
                         <th>Balance</th>
-                        <th>Receipted By</th>
                         <th>Issued By</th>
                         <th>Action</th>
                     </tr>
@@ -227,7 +236,6 @@
                             <td>{{ $payment->created_at }}</td>
                             <td>{{ $payment->umrahSavingTarget ?? $payment->hajjSavingTarget }}</td>
                             <td>UGX {{ number_format($payment->balance) }}</td>
-                            <td>{{ $payment->receipted_by_name }}</td>
                             <td>{{ $payment->issued_by_name }}</td>
                             <td>
                                 {{-- update payment status and target amount status --}}
@@ -300,7 +308,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="newSondaMpolaPaymentLabel">Record Sonda Mpola Payment</h5>
+                        <h5 class="modal-title" id="newSondaMpolaPaymentLabel">Issue Sonda Mpola Payment</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form action="{{ route('sondaMpola.payment.save') }}" method="POST">
@@ -315,28 +323,13 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="currency" class="form-label">Currency</label>
-                                <select name="currency" id="currency" class="form-select" required
-                                    onchange="toggleCurrency()">
-                                    <option value="">Select Option</option>
-                                    <option value="UGX">UGX</option>
-                                    <option value="USD">USD</option>
-                                </select>
-                            </div>
-
-                            <div class="mb-3" id="rate" style="display: none;">
-                                <label for="rate" class="form-label">rate (without commas)</label>
-                                <input type="text" name="rate" id="rate" class="form-control">
-                            </div>
-
-                            <div class="mb-3">
                                 <label for="paymentOption" class="form-label">Payment Option</label>
                                 <select name="paymentOption" id="paymentOption" class="form-select" required>
                                     <option value="">Select Option</option>
-                                    <option value="Cash">Cash</option>
-                                    <option value="mtn">MTN Merchant</option>
-                                    <option value="airtel">AIRTEL Merchant</option>
-                                    <option value="Bank">Bank</option>
+                                    <option value="CASH">Cash</option>
+                                    <option value="MTN">MTN Merchant</option>
+                                    <option value="AIRTEL">AIRTEL Merchant</option>
+                                    <option value="BANK">Bank</option>
                                 </select>
                             </div>
 
@@ -364,12 +357,5 @@
                 });
             });
         });
-    </script>
-
-    <script>
-        function toggleCurrency() {
-            var currency = document.getElementById("currency").value;
-            document.getElementById("rate").style.display = (currency === "USD") ? "block" : "none";
-        }
     </script>
 @endsection

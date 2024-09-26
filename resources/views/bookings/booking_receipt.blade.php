@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sonda Mpola Receipt</title>
+    <title>Payment Receipt</title>
 
     <style>
         body {
@@ -52,10 +52,8 @@
                     <div style="text-align: left;">
                         <?php
                         $logo = base_path('public/images/MaqamTravels_Logo.svg');
-                        $sondaMpola = base_path('public/images/SondaMpola_Logo.svg');
                         ?>
                         <img src="{{ $logo }}" width="100px" alt="maqam" style="margin-right: 20px;">
-                        <img src="{{ $sondaMpola }}" width="100px" alt="sondaMpola">
                     </div>
                 </td>
                 <td><!-- Address Section (Right) -->
@@ -74,7 +72,7 @@
 
         <!-- Receipt Title Section -->
         <div class="receipt-title">
-            <h2>SONDA MPOLA RECEIPT</h2>
+            <h2>PAYMENT RECEIPT</h2>
         </div>
 
         <div style="margin-top: 10px"></div>
@@ -91,12 +89,12 @@
                     <td>{{ $currentDate }}</td>
                 </tr>
                 <tr>
-                    <td>Reference</td>
-                    <td>{{ $reference }}</td>
+                    <td>Booking Type</td>
+                    <td>{{ $bookingType }}</td>
                 </tr>
                 <tr>
-                    <td>Sonda Mpola Target</td>
-                    <td>{{ $sondaMpolaTarget }}</td>
+                    <td>Package</td>
+                    <td>{{ $package }}</td>
                 </tr>
                 <tr>
                     <td>Mode of Payment</td>
@@ -107,12 +105,16 @@
                     <td>{{ number_format($amountDeposited) }}</td>
                 </tr>
                 <tr>
-                    <td>Amount Deposited Uptodate</td>
-                    <td>{{ number_format($amountDepositedUptodate) }}</td>
+                    <td>Currency</td>
+                    <td>{{ $currency }}</td>
                 </tr>
                 <tr>
-                    <td>Balance</td>
-                    <td>{{ number_format($balance) }}</td>
+                    <td>Rate</td>
+                    <td>{{ $rate }}</td>
+                </tr>
+                <tr>
+                    <td>Amount Deposited Uptodate</td>
+                    <td>{{ number_format($amountDepositedUptodate) }}</td>
                 </tr>
                 <tr>
                     <td>Issued By</td>

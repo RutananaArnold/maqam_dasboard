@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\File;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingsController extends Controller
 {
@@ -61,14 +63,15 @@ class BookingsController extends Controller
             ->get();
 
         $payments = DB::table('booking_payments')
-            ->join('bookings', 'bookings.id', '=', 'booking_payments.bookingId')
+            ->join('users', 'users.id', '=', 'booking_payments.issuedBy')
             ->select(
                 'booking_payments.id',
                 'booking_payments.bookingId',
                 'booking_payments.amount',
                 'booking_payments.payment_status',
-                'bookings.paymentOption',
-                'booking_payments.created_at'
+                'booking_payments.paymentOption',
+                'booking_payments.created_at',
+                'users.name as issuedBy'
             )
             ->where('booking_payments.bookingId', '=', $bookId)
             ->orderBy('booking_payments.created_at', 'desc')
@@ -156,29 +159,36 @@ class BookingsController extends Controller
         $request->validate([
             'bookingId' => 'required',
             "paymentOption" => 'required|string',
-            'amount' => 'required|string'
+            'amount' => 'required|string',
+            'currency' => 'required|string'
         ]);
+        $rate = $request->rate;
 
         $bookingId = $request['bookingId'];
         $paymentOption = $request['paymentOption'];
         $bookingAmount = $request['amount'];
+        $currency = $request['currency'];
+
+        $actualAmount = 0.0;
+
+        if ($currency == 'USD') {
+            $actualAmount = $bookingAmount * $rate;
+        } else if ($currency == 'UGX') {
+            $actualAmount = $bookingAmount;
+        }
 
         $payments = new BookingPayment();
         $payments->bookingId = $bookingId;
         $payments->amount = $bookingAmount;
+        $payments->paymentOption = $paymentOption;
+        $payments->currency = $currency;
+        $payments->rate = $rate;
+        $payments->actual_amount = $actualAmount;
 
         try {
 
             if ($payments->save()) {
-
-                $affectedBooking = Booking::where("id", '=', $bookingId)
-                    ->update(["paymentOption" => $paymentOption]);
-
-                if ($affectedBooking) {
-                    return redirect()->back()->with('success', 'Payment Details updated successfully.');
-                } else {
-                    return redirect()->back()->with('error', 'Payment Details failed to get updated.');
-                }
+                return redirect()->back()->with('success', 'Payment Details updated successfully.');
             } else {
                 return redirect()->back()->with('error', 'Failed to save payment details.');
             }
@@ -278,7 +288,77 @@ class BookingsController extends Controller
         } catch (Exception $e) {
             // Log the error and show a message
             echo json_encode($e->getMessage());
-            return redirect()->back()->with('error', 'Error while saving the booking.');
+            return redirect()->back()->with('error', $e->getMessage());
         }
+    }
+
+    public function generateBookingReceipt(Request $request)
+    {
+        $authId = $request->authId;
+        $bookingId = $request->bookingId;
+        $paymentId = $request->paymentId;
+
+        // Update the issuedBy field and check if the update was successful
+        $updated = DB::table('booking_payments')
+            ->where('booking_payments.id', '=', $paymentId)
+            ->where('booking_payments.bookingId', '=', $bookingId)
+            ->update([
+                "issuedBy" => $authId,
+            ]);
+
+        // Fetch a single record
+        $record = DB::table('bookings')
+            ->join('booking_payments', 'booking_payments.bookingId', '=', 'bookings.id')
+            ->join('users as issuedByUser', 'issuedByUser.id', '=', 'booking_payments.issuedBy') // Alias for 'issuedBy' user
+            ->join('users as clientUser', 'clientUser.id', '=', 'bookings.userId') // Alias for 'userId' user
+            ->join('packages', 'packages.id', '=', 'bookings.packageId')
+            ->select(
+                'clientUser.name as client', // Refers to the user who made the booking
+                'packages.category',
+                'packages.title',
+                'booking_payments.paymentOption',
+                'booking_payments.actual_amount',
+                'booking_payments.currency',
+                'booking_payments.rate',
+                'issuedByUser.name as issuedBy' // Refers to the user who issued the payment
+            )
+            ->where('booking_payments.bookingId', '=', $bookingId)
+            ->where('booking_payments.id', '=', $paymentId)
+            ->first();
+
+
+        $amountDepositedUptodate = $this->getTotalAmountUserHasSaved($bookingId);  // Get total saved amount
+
+        if (!$record) {
+            return redirect()->back()->with('error', 'Record not found.');
+        }
+
+        // Generate the PDF content
+        $pdf = Pdf::loadView('bookings.booking_receipt', [
+            'name' => $record->client,
+            'bookingType' => $record->category,
+            'package' => $record->title,
+            'modeOfPayment' => $record->paymentOption,
+            'amountDeposited' => $record->actual_amount,
+            'currency' => $record->currency,
+            'rate' => $record->rate,
+            'amountDepositedUptodate' => $amountDepositedUptodate,
+            'issuedBy' => $record->issuedBy,
+            'currentDate' => now('Africa/Nairobi')->format('d/m/Y')
+        ]);
+
+        $fileName = Str::slug($record->client) . '-' . now('Africa/Nairobi')->format('d-m-Y') . '-maqam-e-receipt.pdf';
+
+        return $pdf->download($fileName);
+    }
+
+    function getTotalAmountUserHasSaved($bookingId)
+    {
+        // Sum all 'actual_amount' for the specified sondaMpolaId
+        $totalAmountSaved = DB::table('booking_payments')
+            ->where('bookingId', '=', $bookingId)
+            ->sum('actual_amount');  // use the sum() method
+
+        return $totalAmountSaved;
     }
 }

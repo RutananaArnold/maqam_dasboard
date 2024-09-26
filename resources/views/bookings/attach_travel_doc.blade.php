@@ -89,18 +89,20 @@
                     <tr>
                         <th>Amount</th>
                         <th>Mode</th>
-                        <th>When</th>
+                        <th>Created</th>
                         <th>Status</th>
+                        <th>Issued By</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($payments as $payment)
                         <tr>
-                            <td>{{ $payment->amount }}</td>
+                            <td>{{ number_format($payment->amount) }}</td>
                             <td>{{ $payment->paymentOption }}</td>
                             <td>{{ $payment->created_at }}</td>
                             <td>{{ $payment->payment_status }}</td>
+                            <td>{{ $payment->issuedBy }}</td>
                             <td>
                                 <a href="#" class="btn btn-outline-warning btn-sm"
                                     data-booking_payment-id="{{ $payment->id }}"
@@ -108,6 +110,10 @@
                                     data-bs-target="#updatePaymentStatusModal" style="width: 10em;">
                                     <i class="fa fa-pencil" aria-hidden="true"></i>
                                     Update Status </a>
+                                {{-- download receipt --}}
+                                <a href="{{ route('booking.receipt.download', ['paymentId' => $payment->id, 'authId' => auth()->user()->id, 'bookingId' => $bookingId]) }}"
+                                    class="btn btn-outline-warning btn-sm" style="width: 6em;"><i class="fa fa-download"
+                                        aria-hidden="true"></i> Receipt</a>
                             </td>
                         </tr>
                     @endforeach
@@ -197,13 +203,28 @@
                             </div>
 
                             <div class="mb-3">
+                                <label for="currency" class="form-label">Currency</label>
+                                <select name="currency" id="currency" class="form-select" required
+                                    onchange="toggleCurrency()">
+                                    <option value="">Select Option</option>
+                                    <option value="UGX">UGX</option>
+                                    <option value="USD">USD</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3" id="rate" style="display: none;">
+                                <label for="rate" class="form-label">rate (without commas)</label>
+                                <input type="text" name="rate" id="rate" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
                                 <label for="paymentOption" class="form-label">Payment Option</label>
                                 <select name="paymentOption" id="paymentOption" class="form-select" required>
                                     <option value="">Select Option</option>
-                                    <option value="Cash">Cash</option>
-                                    <option value="mtn">MTN Merchant</option>
-                                    <option value="airtel">AIRTEL Merchant</option>
-                                    <option value="Bank">Bank</option>
+                                    <option value="CASH">Cash</option>
+                                    <option value="MTN">MTN Merchant</option>
+                                    <option value="AIRTEL">AIRTEL Merchant</option>
+                                    <option value="BANK">Bank</option>
                                 </select>
                             </div>
                         </div>
@@ -248,5 +269,12 @@
                 });
             });
         });
+    </script>
+
+    <script>
+        function toggleCurrency() {
+            var currency = document.getElementById("currency").value;
+            document.getElementById("rate").style.display = (currency === "USD") ? "block" : "none";
+        }
     </script>
 @endsection

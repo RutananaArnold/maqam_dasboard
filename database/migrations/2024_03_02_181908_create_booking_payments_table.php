@@ -18,6 +18,11 @@ class CreateBookingPaymentsTable extends Migration
             $table->foreignId('bookingId')->unsigned()->references('id')->on('bookings');
             $table->string('amount')->nullable();
             $table->string('payment_status')->nullable();
+            $table->string('paymentOption')->nullable();
+            $table->string('currency')->nullable();
+            $table->string('rate')->nullable();
+            $table->string('actual_amount')->nullable();
+            $table->foreignId('issuedBy')->unsigned()->references('id')->on('users');
             $table->timestamps();
         });
     }

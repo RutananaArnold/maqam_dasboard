@@ -14,8 +14,18 @@ class SondaMpolaController extends Controller
     public function view()
     {
         $sondaMpolas = DB::table('sonda_mpolas')
-            ->select('*')  // Select all columns
-            ->orderBy('created_at', 'desc')  // Order by the creation date in descending order
+            ->leftJoin(
+                DB::raw('(SELECT sondaMpolaId, SUM(actual_amount) as total_amount_saved, MAX(target_amount_status) as target_amount_status FROM sonda_mpola_payments GROUP BY sondaMpolaId) as payments'),
+                'payments.sondaMpolaId',
+                '=',
+                'sonda_mpolas.id'
+            )
+            ->select(
+                'sonda_mpolas.*',
+                'payments.total_amount_saved', // Total amount saved from payments
+                'payments.target_amount_status' // Fetch target_amount_status from payments
+            )
+            ->orderBy('sonda_mpolas.created_at', 'desc')
             ->get();
 
         return view('sonda_mpola.view_sonda_mpola_collections', compact('sondaMpolas'));
@@ -115,6 +125,7 @@ class SondaMpolaController extends Controller
                 'process_status' => 'pending',  // Default status, modify if necessary
                 'created_at' => now()->setTimezone('Africa/Nairobi'),
                 'updated_at' => now()->setTimezone('Africa/Nairobi'),
+                'created_by' => $request->authId,
             ]);
 
             // Redirect with a success message
@@ -133,14 +144,21 @@ class SondaMpolaController extends Controller
         $sondaMpolaId = $request->sondaMpolaId;
 
         $sondaMpolaRecord = DB::table('sonda_mpolas')
-            ->select('*')
+            ->leftJoin('users', 'users.id', '=', 'sonda_mpolas.created_by')
+            ->select(
+                'sonda_mpolas.*',
+                'users.name as account_created_by_name'
+            )
             ->where('sonda_mpolas.id', '=', $sondaMpolaId)
             ->orderBy('sonda_mpolas.created_at', 'desc')
             ->first();
 
+        $amountDepositedSoFar = $this->getTotalAmountUserHasSaved($sondaMpolaId);  // Get total saved amount
+
+        $userPendingBalance = $this->getLatestBalance($sondaMpolaId);
+
         $payments = DB::table('sonda_mpola_payments')
-            ->leftJoin('users as receiptedBy', 'receiptedBy.id', '=', 'sonda_mpola_payments.receipted_by')
-            ->leftJoin('users as issuedBy', 'issuedBy.id', '=', 'sonda_mpola_payments.issuedBy')
+            ->leftJoin('users', 'users.id', '=', 'sonda_mpola_payments.issuedBy')
             ->join('sonda_mpolas', 'sonda_mpolas.id', '=', 'sonda_mpola_payments.sondaMpolaId')
             ->select(
                 'sonda_mpola_payments.id',
@@ -150,14 +168,26 @@ class SondaMpolaController extends Controller
                 'sonda_mpolas.umrahSavingTarget',
                 'sonda_mpolas.hajjSavingTarget',
                 'sonda_mpola_payments.balance',
-                'receiptedBy.name as receipted_by_name',
-                'issuedBy.name as issued_by_name'
+                'users.name as issued_by_name'
             )
             ->where('sonda_mpola_payments.sondaMpolaId', '=', $sondaMpolaId)
             ->orderBy('sonda_mpola_payments.created_at', 'desc')
             ->get();
 
-        return view('sonda_mpola.view_sonda_mpola_record', ['sondaMpolaRecord' => $sondaMpolaRecord, 'payments' => $payments, 'sondaMpolaId' => $sondaMpolaId]);
+        return view('sonda_mpola.view_sonda_mpola_record', ['sondaMpolaRecord' => $sondaMpolaRecord, 'amountDepositedSoFar' => $amountDepositedSoFar, 'userPendingBalance' => $userPendingBalance, 'payments' => $payments, 'sondaMpolaId' => $sondaMpolaId]);
+    }
+
+    function getLatestBalance($sondaMpolaId)
+    {
+        // Retrieve the balance of the latest updated record based on updated_at
+        $record = DB::table('sonda_mpola_payments')
+            ->select('sonda_mpola_payments.balance')  // Select the balance
+            ->where('sondaMpolaId', $sondaMpolaId)    // Filter by sondaMpolaId
+            ->orderBy('updated_at', 'desc')           // Prioritize updated_at to get the most recent
+            ->first();                                // Get the first (latest) record
+
+        // Return the latest balance, or null if no record exists
+        return $record ? $record->balance : null;
     }
 
     public function createSondaMpolaPaymentRecord(Request $request)
@@ -165,8 +195,6 @@ class SondaMpolaController extends Controller
         $authId = $request->authId;
         $sondaMpolaId = $request->sondaMpolaId;
         $amount = $request->amount;
-        $currency = $request->currency;
-        $rate = $request->rate;
         $paymentOption = $request->paymentOption;
 
         $userTargetAmount = DB::table('sonda_mpolas')->select('targetAmount')->where('id', '=', $sondaMpolaId)->first();
@@ -175,11 +203,8 @@ class SondaMpolaController extends Controller
 
         $balance = 0.0;
 
-        if ($currency == 'USD') {
-            $actualAmount = $amount * $rate;
-        } else if ($currency == 'UGX') {
-            $actualAmount = $amount;
-        }
+        $actualAmount = $amount;
+
 
         // to calculate balance
         $totalSaved = $this->getTotalAmountUserHasSaved($sondaMpolaId);  // Get total saved amount
@@ -190,11 +215,12 @@ class SondaMpolaController extends Controller
             'sondaMpolaId' => $sondaMpolaId,
             'amount' => $amount,
             'payment_option' => $paymentOption,
-            'currency' => $currency,
-            'rate' => $rate,
+            'currency' => 'UGX',
             'actual_amount' => $actualAmount,
             'balance' => $balance,
             'receipted_by' => $authId,
+            'created_at' => now()->setTimezone('Africa/Nairobi'),
+            'updated_at' => now()->setTimezone('Africa/Nairobi'),
         ]);
 
         if ($isSaved) {
@@ -229,6 +255,7 @@ class SondaMpolaController extends Controller
             ->update([
                 "payment_status" => $payment_status,
                 "target_amount_status" => $targetAmountStatus,
+                'updated_at' => now()->setTimezone('Africa/Nairobi'),
             ]);
 
         if ($updated) {
@@ -267,7 +294,10 @@ class SondaMpolaController extends Controller
                 'users.name as issuedBy'
             )
             ->where('sonda_mpola_payments.sondaMpolaId', '=', $sondaMpolaId)
+            ->where('sonda_mpola_payments.id', '=', $paymentId)
             ->first();
+
+        $amountDepositedUptodate = $this->getTotalAmountUserHasSaved($sondaMpolaId);  // Get total saved amount
 
         if (!$record) {
             return redirect()->back()->with('error', 'Record not found.');
@@ -281,6 +311,7 @@ class SondaMpolaController extends Controller
             'modeOfPayment' => $record->payment_option,
             'amountDeposited' => $record->actual_amount,
             'balance' => $record->balance,
+            'amountDepositedUptodate' => $amountDepositedUptodate,
             'issuedBy' => $record->issuedBy,
             'currentDate' => now('Africa/Nairobi')->format('d/m/Y')
         ]);

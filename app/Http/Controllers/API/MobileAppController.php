@@ -258,40 +258,26 @@ class MobileAppController extends Controller
         $payments = new BookingPayment();
         $payments->bookingId = $bookingId;
         $payments->amount = $bookingAmount;
+        $payments->paymentOption = $paymentOption;
+        $payments->currency = 'UGX';
+        $payments->actual_amount = $bookingAmount;
 
         try {
-            DB::beginTransaction();  // Start transaction
-
             if ($payments->save()) {
-
-                $affectedBooking = Booking::where("id", '=', $bookingId)
-                    ->update(["paymentOption" => $paymentOption]);
-
-                if ($affectedBooking) {
-                    DB::commit();  // Commit transaction if everything succeeds
-                    return response()->json([
-                        'status' => true,
-                        'message' => "Payment Details updated"
-                    ], 200);
-                } else {
-                    DB::rollBack(); // Rollback if booking update fails
-                    return response()->json([
-                        'status' => false,
-                        'message' => "Payment Details failed to get updated"
-                    ], 400);
-                }
+                return response()->json([
+                    'status' => true,
+                    'message' => "Payment Details updated"
+                ], 200);
             } else {
-                DB::rollBack();  // Rollback if payment save fails
                 return response()->json([
                     'status' => false,
                     'message' => 'Failed to save payment details'
                 ], 400);
             }
         } catch (\Exception $e) {
-            DB::rollBack();  // Rollback on exception
             return response()->json([
                 'status' => false,
-                'message' => "Failed to save payment: " . $e->getMessage()
+                'message' => "Failed: " . $e->getMessage()
             ], 500);
         }
     }
@@ -337,11 +323,10 @@ class MobileAppController extends Controller
         $bookId = $request->bookingId;
 
         $payments = DB::table('booking_payments')
-            ->join('bookings', 'bookings.id', '=', 'booking_payments.bookingId')
             ->select(
                 'booking_payments.amount',
                 'booking_payments.payment_status',
-                'bookings.paymentOption',
+                'booking_payments.paymentOption',
                 'booking_payments.created_at'
             )
             ->where('booking_payments.bookingId', '=', $bookId)

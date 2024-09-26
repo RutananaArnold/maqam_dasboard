@@ -4,6 +4,7 @@
 /storage/*.key
 /vendor
 public/sondaMpola/1726484963.jpeg
+public/bookingImages/
 .env
 .env.backup
 .phpunit.result.cache

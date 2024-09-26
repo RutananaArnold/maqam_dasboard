@@ -80,6 +80,7 @@ Route::post('/upload-client-document', [BookingsController::class, 'attachTravel
 Route::post('/update-client-booking-payment-status', [BookingsController::class, 'updatePaymentStatus'])->middleware(['auth'])->name('update.Payment.Status');
 // update booking payment
 Route::post('/update-client-booking-payment', [BookingsController::class, 'updateClientBookingPayment'])->middleware(['auth'])->name('create.bookings.payment');
+Route::get('/generate-booking-receipt', [BookingsController::class, 'generateBookingReceipt'])->middleware(['auth'])->name('booking.receipt.download');
 
 // regular bookings
 Route::get('/regular-bookings', [BookingsController::class, 'viewRegularBookings'])->middleware(['auth'])->name('bookings.regular');

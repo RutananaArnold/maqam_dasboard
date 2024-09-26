@@ -2,11 +2,11 @@
 
 @section('content')
     <div class="pagetitle">
-        <h1>Create Sonda Mpola Record</h1>
+        <h1>Create Sonda Mpola Account</h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active">Create Sonda Mpola Record</li>
+                <li class="breadcrumb-item active">Create Sonda Mpola Account</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
@@ -25,9 +25,15 @@
             </div>
         @endif
 
+        <style>
+            .iti {
+                width: 100%;
+            }
+        </style>
+
         <form id="multiStepForm" method="POST" action="{{ route('sondaMpola.save') }}" enctype="multipart/form-data">
             @csrf <!-- CSRF token for security -->
-
+            <input type="text" name="authId" value="{{ auth()->user()->id }}" hidden>
             <!-- Step 1: Applicant Details -->
             <div id="step1" class="form-step">
                 <h1>Applicant Details</h1>
@@ -55,15 +61,17 @@
 
                 <!-- Collapsible Section -->
                 <div class="form-group collapsible">
-                    <h3>Contact Information</h3>
+                    <h5>Contact Information</h5>
                     <div class="collapsible-content">
                         <div class="form-group">
                             <label for="phone">Client phone:</label>
-                            <input type="text" id="phone" name="phone" class="form-control" required>
+                            <input type="text" id="phone" name="phone" value="756xxxxxx" class="form-control"
+                                required>
                         </div>
                         <div class="form-group">
                             <label for="otherPhone">Client other Phone:</label>
-                            <input type="text" id="otherPhone" name="otherPhone" class="form-control" required>
+                            <input type="text" id="otherPhone" name="otherPhone" value="756xxxxxx" class="form-control"
+                                required>
                         </div>
                         <div class="form-group">
                             <label for="email">Client Email:</label>
@@ -272,6 +280,25 @@
                 const content = this.nextElementSibling;
                 content.style.display = content.style.display === 'block' ? 'none' : 'block';
             });
+        });
+    </script>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"></script>
+    <script>
+        // Initialize the first phone input field
+        var input = document.querySelector("#phone");
+        window.intlTelInput(input, {
+            initialCountry: "UG", // Set default country to 'US'
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" // for formatting
+        });
+
+        // Initialize the second phone input field
+        var otherPhoneInput = document.querySelector("#otherPhone");
+        window.intlTelInput(otherPhoneInput, {
+            initialCountry: "UG", // Set default country to 'US'
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" // for formatting
         });
     </script>
 @endsection

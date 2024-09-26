@@ -16,8 +16,11 @@
     <!-- Add the favicon link -->
     <link rel="icon" href="{{ asset('images/maqamLogo.jpg') }}" type="image/x-icon">
 
+    {{-- Country code CSS --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
+
     {{--  --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
 
     <!-- Google Fonts -->
     <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -157,7 +160,7 @@
                 <ul id="Sonda-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
                         <a href="{{ route('sondaMpola.collections') }}">
-                            <i class="bi bi-circle"></i><span>Sonda Mpola Collections</span>
+                            <i class="bi bi-circle"></i><span>Sonda Mpola Accounts</span>
                         </a>
                     </li>
                 </ul>
