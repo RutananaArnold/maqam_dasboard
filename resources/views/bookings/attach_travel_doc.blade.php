@@ -37,38 +37,52 @@
                 </div>
             </div>
             <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Nationality</th>
-                        <th>Residence</th>
-                        <th>NIN/Passport</th>
-                        <th>Passport</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
                 <tbody>
-
                     @foreach ($userBooking as $booking)
                         <tr>
+                            <th>Name:</th>
                             <td>{{ $booking->name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
                             <td>{{ $booking->email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Phone:</th>
                             <td>{{ $booking->phone }}</td>
+                        </tr>
+                        <tr>
+                            <th>Nationality:</th>
                             <td>{{ $booking->nationality }}</td>
+                        </tr>
+                        <tr>
+                            <th>Residence:</th>
                             <td>{{ $booking->residence }}</td>
+                        </tr>
+                        <tr>
+                            <th>NIN/Passport:</th>
                             <td>{{ $booking->NIN_or_Passport }}</td>
-                            <td><img src="{{ asset('bookingImages/' . $booking->passportPhoto) }}" alt="passport"
-                                    style="max-height: 50px; max-width: 80px"></td>
-                            <td> <a href="{{ route('savePassport', ['userId' => $booking->idOfUser]) }}"
-                                    class="btn btn-outline-warning btn-sm" style="width: 6em;"><i class="fa fa-download"
-                                        aria-hidden="true"></i> Download Passport</a></td>
-
+                        </tr>
+                        <tr>
+                            <th>Passport:</th>
+                            <td>
+                                <img src="{{ asset('bookingImages/' . $booking->passportPhoto) }}" alt="passport"
+                                    style="max-height: 50px; max-width: 80px">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Action:</th>
+                            <td>
+                                <a href="{{ route('savePassport', ['userId' => $booking->idOfUser]) }}"
+                                    class="btn btn-outline-warning btn-sm" style="width: 6em;">
+                                    <i class="fa fa-download" aria-hidden="true"></i> Download Passport
+                                </a>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+
 
             <div style="margin-top: 50px"></div>
 

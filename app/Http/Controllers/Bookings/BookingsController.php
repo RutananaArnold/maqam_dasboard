@@ -27,10 +27,8 @@ class BookingsController extends Controller
                 'bookings.id as bookId',
                 'users.name',
                 'users.phone',
-                'users.gender',
-                'users.nationality',
-                'users.residence',
                 'packages.category',
+                'packages.title',
                 'bookings.created_at',
             )
             ->where('bookings.bookingType', '=', 'App')
@@ -63,7 +61,7 @@ class BookingsController extends Controller
             ->get();
 
         $payments = DB::table('booking_payments')
-            ->join('users', 'users.id', '=', 'booking_payments.issuedBy')
+            ->leftJoin('users', 'users.id', '=', 'booking_payments.issuedBy')
             ->select(
                 'booking_payments.id',
                 'booking_payments.bookingId',
@@ -211,10 +209,8 @@ class BookingsController extends Controller
                 'bookings.id as bookId',
                 'users.name',
                 'users.phone',
-                'users.gender',
-                'users.nationality',
-                'users.residence',
                 'packages.category',
+                'packages.title',
                 'bookings.created_at',
             )
             ->where('bookings.bookingType', '=', 'Regular')

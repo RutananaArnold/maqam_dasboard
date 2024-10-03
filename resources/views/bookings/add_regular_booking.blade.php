@@ -77,6 +77,16 @@
                 </select>
             </div>
 
+            {{-- <div class="form-group">
+                <label for="other_service">Other Service</label>
+                <select class="form-control" id="other_service" name="other_service" required>
+                    <option value="">Select other service</option>
+                    <option value="visa_processing">Visa Processing</option>
+                    <option value="air_ticketing">Air Ticketing</option>
+                    <option value="hotel_booking">Hotel Booking</option>
+                </select>
+            </div> --}}
+
             <div class="form-group">
                 <label for="nin_or_passport">Client NIN / Passport Number:</label>
                 <input type="text" id="nin_or_passport" name="nin_or_passport" class="form-control" required>
@@ -90,4 +100,6 @@
             <button style="margin-top: 30px" type="submit" class="btn btn-primary">Add New Regular Booking</button>
         </form>
     </div>
+
+    <script></script>
 @endsection

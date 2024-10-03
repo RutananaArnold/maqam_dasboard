@@ -38,11 +38,10 @@
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Gender</th>
-                        <th>Nationality</th>
-                        <th>Residence</th>
-                        <th>Category</th>
-                        <th>CreatedAt</th>
+                        <th>Phone</th>
+                        <th>Created</th>
+                        <th>Booking Category</th>
+                        <th>Package</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -51,11 +50,10 @@
                     @foreach ($bookings as $booking)
                         <tr>
                             <td>{{ $booking->name }}</td>
-                            <td>{{ $booking->gender }}</td>
-                            <td>{{ $booking->nationality }}</td>
-                            <td>{{ $booking->residence }}</td>
-                            <td>{{ $booking->category }}</td>
+                            <td>{{ $booking->phone }}</td>
                             <td>{{ $booking->created_at }}</td>
+                            <td>{{ $booking->category }}</td>
+                            <td>{{ $booking->title }}</td>
                             <td>
                                 <a href="{{ route('showUserbooking', ['bookingId' => $booking->bookId]) }}"
                                     class="btn btn-outline-warning btn-sm" style="width: 8em;"><i class="fa fa-edit"
