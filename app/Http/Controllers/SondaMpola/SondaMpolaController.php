@@ -199,6 +199,16 @@ class SondaMpolaController extends Controller
 
         $userTargetAmount = DB::table('sonda_mpolas')->select('targetAmount')->where('id', '=', $sondaMpolaId)->first();
 
+        // Ensure the userTargetAmount is retrieved successfully
+        if (!$userTargetAmount) {
+            return redirect()->back()->with('error', 'Target amount not found. Please try again.');
+        }
+
+        // Check if the amount exceeds the target amount
+        if ($amount > $userTargetAmount->targetAmount) {
+            return redirect()->back()->with('error', 'Amount is greater than the Target amount. Please try again with a less amount.');
+        }
+
         $actualAmount = 0.0;
 
         $balance = 0.0;

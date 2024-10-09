@@ -48,9 +48,18 @@ return [
             'root' => storage_path('app'),
         ],
 
-        'booking_uploads' => [
+        'bookingImages' => [
             'driver' => 'local',
-            'root' => public_path() . '/bookingImages',
+            'root' => public_path('bookingImages'), // Points to the public directory
+            'url' => env('APP_URL') . '/bookingImages', // URL to access the images
+            'visibility' => 'public', // Ensure it's publicly accessible
+        ],
+
+        'sondaMpola' => [
+            'driver' => 'local',
+            'root' => public_path('sondaMpola'), // Points to the public directory
+            'url' => env('APP_URL') . '/sondaMpola', // URL to access the images
+            'visibility' => 'public', // Ensure it's publicly accessible
         ],
 
         'public' => [

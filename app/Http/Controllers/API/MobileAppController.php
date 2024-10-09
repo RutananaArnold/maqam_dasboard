@@ -79,8 +79,7 @@ class MobileAppController extends Controller
             try {
                 Storage::disk('bookingImages')->put($file, $decoded_file);
             } catch (Exception $e) {
-                //throw $th;
-                echo json_encode($e->getMessage());
+                return response()->json(['message' => $e->getMessage()], 500);
             }
 
             $id = DB::table('users')->insertGetId([
@@ -442,5 +441,313 @@ class MobileAppController extends Controller
             'message' => 'Successful login',
             'user' => $user,
         ], 200);
+    }
+
+    public function registerClientViaApp(Request $request)
+    {
+        // Validate incoming request data
+        $validatedData = $request->validate([
+            'name' => 'required|string',
+            'phone' => 'required|string',
+            'password' => 'required|string|min:8',
+            'gender' => 'required|string',
+            'dob' => 'required|date_format:d/m/Y',  // Accepts '15/07/1999'
+            'email' => 'required|email',
+            'nationality' => 'required|string',
+            'residence' => 'required|string',
+            'passportPhoto' => 'required|string', // Assuming this is a base64 string
+            'ninOrPassport' => 'required|string',
+        ]);
+
+        // if userId is empty, create an account for the user with their number as their password
+        $currentDateTime = now()->setTimezone('Africa/Nairobi');
+
+        // Decode base64 image string
+        $decoded_file = base64_decode($request->passportPhoto); // decode the file
+        $mime_type = finfo_buffer(finfo_open(), $decoded_file, FILEINFO_MIME_TYPE); // extract mime type
+        $extension = $this->mime2ext($mime_type); // extract extension from mime type
+        $file = uniqid() . '.' . $extension; // rename file as a unique name
+
+        try {
+            Storage::disk('bookingImages')->put($file, $decoded_file);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+
+        $id = DB::table('users')->insertGetId([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'] ?? 'example@gmail.com',
+            'phone' => $validatedData['phone'],
+            'password' => Hash::make($validatedData['password']),
+            'role' => 3,
+            'gender' => $validatedData['gender'],
+            'dob' => $validatedData['dob'] ?? '1900-01-12', // Store in Y-m-d format
+            'nationality' => $validatedData['nationality'],
+            'residence' => $validatedData['residence'],
+            'NIN_or_Passport' => $validatedData['ninOrPassport'],
+            'passportPhoto' => $file,
+            'created_at' => $currentDateTime,
+            'updated_at' => $currentDateTime
+        ]);
+
+        $user = DB::table('users')->select('id', 'name', 'email', 'phone', 'role', 'gender', 'dob', 'nationality', 'residence', 'NIN_or_Passport', 'passportPhoto')->find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 400);
+        }
+
+        // Construct the passport photo URL
+        $passportPhotoUrl = url('bookingImages/' . $user->passportPhoto);
+        $user->passportPhoto = $passportPhotoUrl;
+
+        return response()->json([
+            'message' => 'Maqam Account Created successfully',
+            'user' => $user,
+        ], 200);
+    }
+
+
+    // SONDA MPOLA API
+    public function loginIntoSondaMpolaAccountAPI(Request $request)
+    {
+        // Validate incoming request data
+        $validatedData = $request->validate([
+            'reference' => 'required|string|max:255',
+        ]);
+
+        $reference = $validatedData['reference'];
+
+        $user = DB::table('sonda_mpolas')
+            ->select('sonda_mpolas.*',)
+            ->where('reference', '=', $reference)
+            ->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 400);
+        }
+
+        $sondaMpolaId = $user->id;
+
+        $amountDepositedSoFar = $this->getTotalAmountSondaMpolaUserHasSaved($sondaMpolaId);  // Get total saved amount
+
+        $userPendingBalance = $this->getSondaMpolaUserLatestBalance($sondaMpolaId);
+
+        $payments = DB::table('sonda_mpola_payments')
+            ->leftJoin('users', 'users.id', '=', 'sonda_mpola_payments.issuedBy')
+            ->join('sonda_mpolas', 'sonda_mpolas.id', '=', 'sonda_mpola_payments.sondaMpolaId')
+            ->select(
+                'sonda_mpola_payments.id',
+                'sonda_mpola_payments.amount',
+                'sonda_mpola_payments.payment_option',
+                'sonda_mpola_payments.created_at',
+                'sonda_mpolas.umrahSavingTarget',
+                'sonda_mpolas.hajjSavingTarget',
+                'sonda_mpola_payments.balance',
+                'users.name as issued_by_name'
+            )
+            ->where('sonda_mpola_payments.sondaMpolaId', '=', $sondaMpolaId)
+            ->orderBy('sonda_mpola_payments.created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'message' => 'Sonda Mpola Account Login successful',
+            'sondaMpolaId' => $sondaMpolaId,
+            'account' => $user,
+            'payments' => $payments,
+            'amountDepositedSoFar' => $amountDepositedSoFar,
+            'userPendingBalance' => $userPendingBalance,
+        ], 200);
+    }
+
+    function getTotalAmountSondaMpolaUserHasSaved($sondaMpolaId)
+    {
+        // Sum all 'actual_amount' for the specified sondaMpolaId
+        $totalAmountSaved = DB::table('sonda_mpola_payments')
+            ->where('sondaMpolaId', '=', $sondaMpolaId)
+            ->sum('actual_amount');  // use the sum() method
+
+        return $totalAmountSaved;
+    }
+
+    function getSondaMpolaUserLatestBalance($sondaMpolaId)
+    {
+        // Retrieve the balance of the latest updated record based on updated_at
+        $record = DB::table('sonda_mpola_payments')
+            ->select('sonda_mpola_payments.balance')  // Select the balance
+            ->where('sondaMpolaId', $sondaMpolaId)    // Filter by sondaMpolaId
+            ->orderBy('updated_at', 'desc')           // Prioritize updated_at to get the most recent
+            ->first();                                // Get the first (latest) record
+
+        // Return the latest balance, or null if no record exists
+        return $record ? $record->balance : null;
+    }
+
+    public function createSondaMpolaPaymentRecordAPI(Request $request)
+    {
+        $authId = $request->authId;
+        $sondaMpolaId = $request->sondaMpolaId;
+        $amount = $request->amount;
+        $paymentOption = $request->paymentOption;
+
+        $userTargetAmount = DB::table('sonda_mpolas')->select('targetAmount')->where('id', '=', $sondaMpolaId)->first();
+
+        if ($amount > $userTargetAmount->targetAmount) {
+            return response()->json(['message' => 'Amount Greater than Target amount, Please try again with less amount.'], 400);
+        }
+        $actualAmount = 0.0;
+
+        $balance = 0.0;
+
+        $actualAmount = $amount;
+
+
+        // to calculate balance
+        $totalSaved = $this->getTotalAmountSondaMpolaUserHasSaved($sondaMpolaId);  // Get total saved amount
+        $balance = $userTargetAmount->targetAmount - ($totalSaved + $actualAmount);
+
+        // insert record
+        $isSaved = DB::table('sonda_mpola_payments')->insert([
+            'sondaMpolaId' => $sondaMpolaId,
+            'amount' => $amount,
+            'payment_option' => $paymentOption,
+            'currency' => 'UGX',
+            'actual_amount' => $actualAmount,
+            'balance' => $balance,
+            'receipted_by' => $authId,
+            'created_at' => now()->setTimezone('Africa/Nairobi'),
+            'updated_at' => now()->setTimezone('Africa/Nairobi'),
+        ]);
+
+        if ($isSaved) {
+            // Redirect with a success message
+            return response()->json([
+                'message' => 'Sonda Mpola Payment record saved successfully!',
+            ], 200);
+        } else {
+            // Return with an error message
+            return response()->json([
+                'message' => 'Failed to save Sonda Mpola payment record. Please try again.',
+            ], 400);
+        }
+    }
+
+    public function createSondaMpolaAccountAPI(Request $request)
+    {
+        try {
+            // Handle image upload
+            $file = null;  // Initialize the file variable
+            if ($request->hasFile('image')) {
+
+                // Decode base64 image string
+                $decoded_file = base64_decode($request->image); // decode the file
+                $mime_type = finfo_buffer(finfo_open(), $decoded_file, FILEINFO_MIME_TYPE); // extract mime type
+                $extension = $this->mime2ext($mime_type); // extract extension from mime type
+                $file = uniqid() . '.' . $extension; // rename file as a unique name
+
+                try {
+                    Storage::disk('sondaMpola')->put($file, $decoded_file);
+                } catch (Exception $e) {
+                    return response()->json(['message' => $e->getMessage()], 500);
+                }
+            }
+
+            // Reference generation logic
+            $referencePrefix = 'SM/';  // Constant prefix
+            $referenceMiddle = '';
+
+            // Determine middle part based on savingFor and the saving target selected
+            if ($request->input('savingFor') == 'Umrah') {
+                switch ($request->input('umrahSavingTarget')) {
+                    case 'Ramadhan_13200000':
+                        $referenceMiddle = 'UR';
+                        break;
+                    case 'December_10300000':
+                        $referenceMiddle = 'UD';
+                        break;
+                    case 'otherMonths_8400000':
+                        $referenceMiddle = 'UO';
+                        break;
+                    default:
+                        $referenceMiddle = 'UO'; // Default to 'UO' if no valid option selected
+                        break;
+                }
+            } elseif ($request->input('savingFor') == 'Hajj') {
+                switch ($request->input('hajjSavingTarget')) {
+                    case 'Class_A_31800000':
+                        $referenceMiddle = 'HA';
+                        break;
+                    case 'Class_B_21500000':
+                        $referenceMiddle = 'HB';
+                        break;
+                    default:
+                        $referenceMiddle = 'HA'; // Default to 'HA' if no valid option selected
+                        break;
+                }
+            }
+
+            // Get the total count of existing records to generate a unique number
+            $totalRecords = DB::table('sonda_mpolas')->count();
+            $referenceNumber = $totalRecords + 1;  // Increment the total count
+
+            // Full reference
+            $reference = $referencePrefix . $referenceMiddle . '/' . $referenceNumber;
+
+            // Insert the data into the sonda_mpolas table
+            $id = DB::table('sonda_mpolas')->insertGetId([
+                'name' => $request->input('name'),
+                'identificationType' => $request->input('identificationType'),
+                'nin_or_passport' => $request->input('nin_or_passport'),
+                'dateOfExpiry' => $request->input('dateOfExpiry'),
+                'phone' => $request->input('phone'),
+                'otherPhone' => $request->input('otherPhone'),
+                'email' => $request->input('email'),
+                'savingFor' => $request->input('savingFor'),
+                'umrahSavingTarget' => $request->input('umrahSavingTarget'),
+                'hajjSavingTarget' => $request->input('hajjSavingTarget'),
+                'targetAmount' => $request->input('targetAmount'),
+                'gender' => $request->input('gender'),
+                'occupation' => $request->input('occupation'),
+                'position' => $request->input('position'),
+                'dob' => $request->input('dob'),
+                'placeOfBirth' => $request->input('placeOfBirth'),
+                'fatherName' => $request->input('fatherName'),
+                'motherName' => $request->input('motherName'),
+                'maritalStatus' => $request->input('maritalStatus'),
+                'country' => $request->input('country'),
+                'nationality' => $request->input('nationality'),
+                'residence' => $request->input('residence'),
+                'district' => $request->input('district'),
+                'county' => $request->input('county'),
+                'subcounty' => $request->input('subcounty'),
+                'parish' => $request->input('parish'),
+                'village' => $request->input('village'),
+                'nextOfKin' => $request->input('nextOfKin'),
+                'relationship' => $request->input('relationship'),
+                'nextOfKinAddress' => $request->input('nextOfKinAddress'),
+                'mobileNo' => $request->input('mobileNo'),
+                'image' => $file,  // Store the image path in the database
+                'reference' => $reference,  // Store the generated reference
+                'process_status' => 'pending',  // Default status, modify if necessary
+                'created_at' => now()->setTimezone('Africa/Nairobi'),
+                'updated_at' => now()->setTimezone('Africa/Nairobi'),
+                'created_by' => $request->authId,
+            ]);
+
+            $user = DB::table('sonda_mpolas')
+                ->select('sonda_mpolas.*',)
+                ->where('id', '=', $id)
+                ->first();
+
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 400);
+            }
+
+            return response()->json([
+                'message' => 'Sonda Mpola record saved successfully!',
+                'user' => $user,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 }
