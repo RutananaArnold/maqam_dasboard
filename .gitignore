@@ -3,8 +3,8 @@
 /public/storage
 /storage/*.key
 /vendor
-public/sondaMpola/1726484963.jpeg
-# public/bookingImages/
+public/sondaMpola/
+public/bookingImages/
 .env
 .env.backup
 .phpunit.result.cache

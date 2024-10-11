@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class MobileAppController extends Controller
 {
@@ -634,21 +635,62 @@ class MobileAppController extends Controller
     public function createSondaMpolaAccountAPI(Request $request)
     {
         try {
+            // Validate the incoming request
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string',
+                'identificationType' => 'required|string',
+                'nin_or_passport' => 'required|string',
+                'dateOfExpiry' => 'required|date_format:d/m/Y',  // Accepts '15/07/1999'
+                'phone' => 'required|string',
+                'email' => 'required|email',
+                'savingFor' => 'required|string|in:Umrah,Hajj',
+                'umrahSavingTarget' => 'nullable|string', // Optional fields
+                'hajjSavingTarget' => 'nullable|string',  // Optional fields
+                'targetAmount' => 'required|string',
+                'gender' => 'required|string',
+                'dob' => 'required|date_format:d/m/Y',  // Accepts '15/07/1999'
+                'placeOfBirth' => 'required|string',
+                'fatherName' => 'required|string',
+                'motherName' => 'required|string',
+                'maritalStatus' => 'required|string',
+                'country' => 'required|string',
+                'nationality' => 'required|string',
+                'residence' => 'required|string',
+                'district' => 'required|string',
+                'county' => 'required|string',
+                'subcounty' => 'required|string',
+                'parish' => 'required|string',
+                'village' => 'required|string',
+                'nextOfKin' => 'required|string',
+                'relationship' => 'required|string',
+                'nextOfKinAddress' => 'required|string',
+                'mobileNo' => 'required|string',
+                'authId' => 'required',
+                'image' => 'required|string', // Assuming this is a base64 string
+            ]);
+
+            // If validation fails, return the error messages
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation errors occurred.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+
             // Handle image upload
             $file = null;  // Initialize the file variable
-            if ($request->hasFile('image')) {
 
-                // Decode base64 image string
-                $decoded_file = base64_decode($request->image); // decode the file
-                $mime_type = finfo_buffer(finfo_open(), $decoded_file, FILEINFO_MIME_TYPE); // extract mime type
-                $extension = $this->mime2ext($mime_type); // extract extension from mime type
-                $file = uniqid() . '.' . $extension; // rename file as a unique name
+            // Decode base64 image string
+            $decoded_file = base64_decode($request->image); // decode the file
+            $mime_type = finfo_buffer(finfo_open(), $decoded_file, FILEINFO_MIME_TYPE); // extract mime type
+            $extension = $this->mime2ext($mime_type); // extract extension from mime type
+            $file = uniqid() . '.' . $extension; // rename file as a unique name
 
-                try {
-                    Storage::disk('sondaMpola')->put($file, $decoded_file);
-                } catch (Exception $e) {
-                    return response()->json(['message' => $e->getMessage()], 500);
-                }
+            try {
+                Storage::disk('sondaMpola')->put($file, $decoded_file);
+            } catch (Exception $e) {
+                return response()->json(['message' => $e->getMessage()], 500);
             }
 
             // Reference generation logic
@@ -730,7 +772,7 @@ class MobileAppController extends Controller
                 'process_status' => 'pending',  // Default status, modify if necessary
                 'created_at' => now()->setTimezone('Africa/Nairobi'),
                 'updated_at' => now()->setTimezone('Africa/Nairobi'),
-                'created_by' => $request->authId,
+                'created_by' => $request->input('authId'),
             ]);
 
             $user = DB::table('sonda_mpolas')
@@ -741,6 +783,10 @@ class MobileAppController extends Controller
             if (!$user) {
                 return response()->json(['message' => 'User not found'], 400);
             }
+
+            // Construct the passport photo URL
+            $passportPhotoUrl = url('sondaMpola/' . $user->image);
+            $user->image = $passportPhotoUrl;
 
             return response()->json([
                 'message' => 'Sonda Mpola record saved successfully!',
