@@ -437,6 +437,10 @@ class MobileAppController extends Controller
             return response()->json(['message' => 'Invalid phone number or password'], 401);
         }
 
+        // Construct the passport photo URL
+        $passportPhotoUrl = url('bookingImages/' . $user->passportPhoto);
+        $user->passportPhoto = $passportPhotoUrl;
+
 
         return response()->json([
             'message' => 'Successful login',
@@ -527,6 +531,11 @@ class MobileAppController extends Controller
             return response()->json(['message' => 'User not found'], 400);
         }
 
+        // Construct the passport photo URL
+        $passportPhotoUrl = url('sondaMpola/' . $user->image);
+        $user->image = $passportPhotoUrl;
+
+
         $sondaMpolaId = $user->id;
 
         $amountDepositedSoFar = $this->getTotalAmountSondaMpolaUserHasSaved($sondaMpolaId);  // Get total saved amount
@@ -541,6 +550,7 @@ class MobileAppController extends Controller
                 'sonda_mpola_payments.amount',
                 'sonda_mpola_payments.payment_option',
                 'sonda_mpola_payments.created_at',
+                'sonda_mpola_payments.payment_status',
                 'sonda_mpolas.umrahSavingTarget',
                 'sonda_mpolas.hajjSavingTarget',
                 'sonda_mpola_payments.balance',
