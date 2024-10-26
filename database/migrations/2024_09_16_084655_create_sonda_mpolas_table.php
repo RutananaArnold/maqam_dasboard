@@ -50,6 +50,7 @@ class CreateSondaMpolasTable extends Migration
             $table->string('reference')->nullable();
             $table->string('process_status')->nullable();
             $table->foreignId('created_by')->unsigned()->references('id')->on('users');
+            $table->foreignId('system_user')->unsigned()->references('id')->on('users');
             $table->timestamps();
         });
     }

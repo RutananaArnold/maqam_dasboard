@@ -783,6 +783,7 @@ class MobileAppController extends Controller
                 'created_at' => now()->setTimezone('Africa/Nairobi'),
                 'updated_at' => now()->setTimezone('Africa/Nairobi'),
                 'created_by' => $request->input('authId'),
+                'system_user' => $request->input('authId'),
             ]);
 
             $user = DB::table('sonda_mpolas')
