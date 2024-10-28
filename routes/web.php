@@ -29,6 +29,10 @@ Route::post('/register', [AuthController::class, 'registration'])->middleware(['
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('loginuser');
+
+// system users
+Route::get('/system-users', [AuthController::class, 'viewSystemUsers'])->middleware(['auth'])->name('system.users');
+
 // delete user information
 Route::get('/delete-user-information', function () {
     return view('auth.delete_user');
@@ -89,9 +93,7 @@ Route::post('/save-regular-booking', [BookingsController::class, 'createRegularB
 
 // Sonda mpola
 Route::get('/sonda-mpola-collections', [SondaMpolaController::class, 'view'])->middleware(['auth'])->name('sondaMpola.collections');
-Route::get('/redirect-to-create-sonda-mpola-record', function () {
-    return view('sonda_mpola.create_sonda_mpola_record');
-})->middleware(['auth'])->name('redirect.sondaMpola.create');
+Route::get('/redirect-to-create-sonda-mpola-record', [SondaMpolaController::class, 'createSondaMpolaAccountPage'])->middleware(['auth'])->name('redirect.sondaMpola.create');
 Route::post('/save-sonda-mpola-record', [SondaMpolaController::class, 'saveSondaMpolaRecord'])->middleware(['auth'])->name('sondaMpola.save');
 Route::get('/view-sonda-mpola-record', [SondaMpolaController::class, 'viewSondaMpolaRecord'])->middleware(['auth'])->name('sondaMpola.view.record');
 Route::post('/store-sonda-mpola-payment-record', [SondaMpolaController::class, 'createSondaMpolaPaymentRecord'])->middleware(['auth'])->name('sondaMpola.payment.save');

@@ -169,12 +169,19 @@
 
             @auth
                 @if (auth()->user()->role == 1)
-                    <li class="nav-heading">Pages</li>
+                    <li class="nav-heading">Users</li>
 
                     <li class="nav-item">
                         <a class="nav-link collapsed" href="{{ route('register') }}">
                             <i class="bi bi-person"></i>
                             <span>Register System User</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" href="{{ route('system.users') }}">
+                            <i class="bi bi-person"></i>
+                            <span>System Users</span>
                         </a>
                     </li>
                 @endif

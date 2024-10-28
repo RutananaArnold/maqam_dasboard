@@ -231,6 +231,19 @@
                     <label for="image">Passport Image (The image should be less than 1MB):</label>
                     <input type="file" id="image" name="image" class="form-control" required>
                 </div>
+                <p></p>
+                <div class="form-group">
+                    <label for="userSelect">Attched Sonda Mpola account to a System User</label>
+                    <p></p>
+                    <select class="form-control" id="userSelect" name="system_user_id" required>
+                        <option value="">Select a System User</option>
+                        @foreach ($users as $user)
+                            <option value="{{ $user->id }}">
+                                {{ $user->name }} - {{ $user->email }} - {{ $user->phone }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
 
             <div class="mt-4"></div>
@@ -299,6 +312,20 @@
         window.intlTelInput(otherPhoneInput, {
             initialCountry: "UG", // Set default country to 'US'
             utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" // for formatting
+        });
+    </script>
+
+    <!-- Select2 CSS and JS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#userSelect').select2({
+                placeholder: 'Search for a user by name, email, or phone',
+                allowClear: true
+            });
         });
     </script>
 @endsection

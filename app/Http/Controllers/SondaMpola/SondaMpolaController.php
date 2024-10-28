@@ -126,6 +126,7 @@ class SondaMpolaController extends Controller
                 'created_at' => now()->setTimezone('Africa/Nairobi'),
                 'updated_at' => now()->setTimezone('Africa/Nairobi'),
                 'created_by' => $request->authId,
+                'system_user' =>  $request->input('system_user_id'),
             ]);
 
             // Redirect with a success message
@@ -273,6 +274,21 @@ class SondaMpolaController extends Controller
         } else {
             return redirect()->back()->with('error', 'Sonda Mpola payment status not updated.');
         }
+    }
+
+    public function createSondaMpolaAccountPage()
+    {
+        $users = DB::table('users')
+            ->select(
+                'users.id',
+                'users.name',
+                'users.email',
+                'users.phone',
+            )
+            ->orderBy('users.created_at', 'desc')
+            ->get();
+
+        return view('sonda_mpola.create_sonda_mpola_record', compact('users'));
     }
 
     public function generateSondaMpolaReceipt(Request $request)

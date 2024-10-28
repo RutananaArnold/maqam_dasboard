@@ -25,14 +25,42 @@ class AuthController extends Controller
         return view('auth.register', ['roles' => $roles]);
     }
 
-    protected function registration(Request $request)
+    public function registration(Request $request)
     {
-        $currentTime = now();
+        $request->validate([
+            'name' => 'required|string',
+            "email" => 'required|string',
+            'phone' => 'required|string',
+            'gender' => 'required|string',
+            'dob' => 'required|date_format:d/m/Y',
+            'nationality' => 'required|string',
+            'residence' => 'required|string',
+            'nin_or_passport' => 'required|string',
+        ]);
+
+        // Handle image upload
+        $imageName = null; // Initialize image name variable
+        if ($request->hasFile('image')) {
+            // Get the file from the request
+            $image = $request->file('image');
+            // Generate a unique name for the image using the current timestamp
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            // Move the image to the folder
+            $image->move(public_path('bookingImages'), $imageName);
+        }
+
+        $currentTime = now()->setTimezone('Africa/Nairobi');
 
         $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->phone = $request->phone;
+        $user->name = $request['name'];
+        $user->email = $request['email'];
+        $user->phone = $request['phone'];
+        $user->gender = $request['gender'];
+        $user->dob = $request['dob'];
+        $user->nationality = $request['nationality'];
+        $user->residence = $request['residence'];
+        $user->NIN_or_Passport = $request['nin_or_passport'];
+        $user->passportPhoto = $imageName; // Store the file name if the file was uploaded
         $user->password = Hash::make($request->password);
         $user->role = $request->role;
         $user->created_at = $currentTime;
@@ -40,7 +68,7 @@ class AuthController extends Controller
 
 
         if ($user->save()) {
-            return redirect()->route('login')->with('success', 'New user registered successfully');
+            return redirect()->back()->with('success', 'New user registered successfully');
         } else {
             return redirect()->back()->with('error', 'failed registration');
         }
@@ -68,10 +96,15 @@ class AuthController extends Controller
 
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-
-
-            return redirect()->intended('dashboard');
+            $user = Auth::user();
+            $userRoleId = (int) $user->role;
+            // Check if the user's roleId is a specific value
+            if ($userRoleId === 1 || $userRoleId === 2) {
+                $request->session()->regenerate();
+                return redirect()->intended('dashboard');
+            } else {
+                return redirect()->back()->with('error', 'The provided credentials belong to Maqam Travels client');
+            }
         }
 
         return back()->withErrors([
@@ -120,5 +153,26 @@ class AuthController extends Controller
             // User not found
             return redirect()->back()->with('error', 'User not found');
         }
+    }
+
+    public function viewSystemUsers()
+    {
+        $users = DB::table('users')
+            ->join('user_roles', 'user_roles.id', '=', 'users.role')
+            ->select(
+                'users.id',
+                'users.name',
+                'users.email',
+                'users.phone',
+                'users.gender',
+                'users.dob',
+                'users.nationality',
+                'users.residence',
+                'users.NIN_or_Passport',
+                'user_roles.Role as system_role',
+            )
+            ->orderBy('users.created_at', 'desc')
+            ->get();
+        return view('auth.system_users', ['users' => $users]);
     }
 }
